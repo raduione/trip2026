@@ -86,12 +86,15 @@
     background: var(--surface);
     border-bottom: 1px solid var(--border);
     position: sticky; top: 0; z-index: 100;
+    overflow-x: auto;
+    scrollbar-width: none;
   }
+  .tabs::-webkit-scrollbar { display: none; }
   .tab {
-    flex: 1; padding: 12px 8px; text-align: center;
-    font-size: 12px; font-weight: 600; color: var(--muted);
+    flex: 1; min-width: 68px; padding: 12px 6px; text-align: center;
+    font-size: 11px; font-weight: 600; color: var(--muted);
     cursor: pointer; border-bottom: 2px solid transparent;
-    transition: all 0.2s;
+    transition: all 0.2s; white-space: nowrap;
   }
   .tab.active { color: #60A5FA; border-bottom-color: #60A5FA; }
 
@@ -319,6 +322,42 @@
   .stay-label { color: var(--muted); width: 70px; flex-shrink: 0; }
   .stay-value { flex: 1; }
   .highlight { color: #FDE047; font-weight: 600; }
+
+  /* RESTAURANTS */
+  .restaurants { padding: 12px 16px 4px; }
+  .city-header {
+    display: flex; align-items: center; gap: 8px;
+    margin: 20px 0 10px; padding-bottom: 8px;
+    border-bottom: 2px solid; font-size: 15px; font-weight: 700;
+  }
+  .city-header:first-child { margin-top: 4px; }
+  .city-header small { font-size: 12px; font-weight: 400; opacity: 0.7; }
+  .city-header.milan    { color: #93C5FD; border-color: var(--milan); }
+  .city-header.florence { color: #FDBA74; border-color: var(--florence); }
+  .city-header.rome     { color: #FCA5A5; border-color: var(--rome); }
+  .city-header.paris    { color: #F9A8D4; border-color: var(--paris); }
+  .resto-card {
+    background: var(--surface); border: 1px solid var(--border);
+    border-radius: var(--radius); margin-bottom: 10px; overflow: hidden;
+  }
+  .resto-top { padding: 12px 14px 10px; border-bottom: 1px solid var(--border); }
+  .resto-name { font-size: 15px; font-weight: 700; }
+  .resto-dish { font-size: 12px; color: var(--muted); margin-top: 2px; }
+  .resto-tags { display: flex; gap: 5px; flex-wrap: wrap; margin-top: 8px; }
+  .resto-tag { font-size: 10px; padding: 2px 7px; border-radius: 6px; font-weight: 600; }
+  .tag-day   { background: rgba(99,102,241,.2);  color: #A5B4FC; border: 1px solid rgba(99,102,241,.3); }
+  .tag-must  { background: rgba(234,179,8,.15);  color: #FDE047; border: 1px solid rgba(234,179,8,.3); }
+  .tag-res   { background: rgba(239,68,68,.15);  color: #FCA5A5; border: 1px solid rgba(239,68,68,.3); }
+  .tag-free  { background: rgba(34,197,94,.15);  color: #86EFAC; border: 1px solid rgba(34,197,94,.3); }
+  .tag-price { background: rgba(255,255,255,.07); color: var(--muted); border: 1px solid var(--border); }
+  .resto-body { padding: 10px 14px; }
+  .resto-tip  { font-size: 13px; color: #CBD5E1; line-height: 1.45; margin-bottom: 8px; }
+  .resto-map-btn {
+    display: inline-flex; align-items: center; gap: 5px;
+    font-size: 12px; color: #60A5FA; text-decoration: none;
+    padding: 5px 10px; background: rgba(96,165,250,.1);
+    border-radius: 8px; border: 1px solid rgba(96,165,250,.2);
+  }
 </style>
 </head>
 <body>
@@ -342,6 +381,7 @@
   <div class="tab" onclick="showTab('refs')">🔑 Códigos</div>
   <div class="tab" onclick="showTab('stays')">🏠 Hospedagem</div>
   <div class="tab" onclick="showTab('checklist')">✅ Checklist</div>
+  <div class="tab" onclick="showTab('food')">🍽️ Comida</div>
 </div>
 
 <!-- ===================== ROTEIRO ===================== -->
@@ -706,6 +746,211 @@
     <div class="check-item" onclick="toggleCheck(this)"><div class="check-box">✓</div><span class="check-text">Checkout Roma + ir pro FCO (09/03 · voo 12:10)</span></div>
     <div class="check-item" onclick="toggleCheck(this)"><div class="check-box">✓</div><span class="check-text">Checkout Paris + ir pro ORY (13/03 · voo 13:15)</span></div>
     <div class="check-item" onclick="toggleCheck(this)"><div class="check-box">✓</div><span class="check-text">Checkout Milão 2 + transfer MXP (16/03 · voo 12:00)</span></div>
+  </div>
+
+</div>
+
+<!-- ===================== RESTAURANTES ===================== -->
+<div id="food" class="section restaurants">
+
+  <div class="city-header milan">🇮🇹 Milão <small>02–04 / 13–16 Mar</small></div>
+
+  <div class="resto-card">
+    <div class="resto-top">
+      <div class="resto-name">Al Cantinone</div>
+      <div class="resto-dish">🥩 Cotoletta alla Milanese</div>
+      <div class="resto-tags">
+        <span class="resto-tag tag-day">Dia 2 ou 4 · jantar</span>
+        <span class="resto-tag tag-must">⭐ Imperdível</span>
+        <span class="resto-tag tag-price">€€</span>
+      </div>
+    </div>
+    <div class="resto-body">
+      <div class="resto-tip">Ambiente rústico histórico. Cotoletta de vitela com tempero secreto — crocante, fina, do tamanho do prato. Combo obrigatório: peça junto com o Risoto alla Milanese (açafrão).</div>
+      <a class="resto-map-btn" href="https://www.google.com/maps/search/Al+Cantinone+Milan" target="_blank">📍 Ver no Maps</a>
+    </div>
+  </div>
+
+  <div class="resto-card">
+    <div class="resto-top">
+      <div class="resto-name">Osteria Angelino dal 1899</div>
+      <div class="resto-dish">🥩 Cotoletta + Risoto Milanês</div>
+      <div class="resto-tags">
+        <span class="resto-tag tag-day">Dia 2 · jantar</span>
+        <span class="resto-tag tag-price">€€</span>
+      </div>
+    </div>
+    <div class="resto-body">
+      <div class="resto-tip">Desde 1899. Muito falada por locals. Milanesa fina e crocante coberta com molho de tomate fresco e parmesão. Atmosfera tradicional, menos turística que os concorrentes.</div>
+      <a class="resto-map-btn" href="https://www.google.com/maps/search/Osteria+Angelino+1899+Milan" target="_blank">📍 Ver no Maps</a>
+    </div>
+  </div>
+
+  <div class="resto-card">
+    <div class="resto-top">
+      <div class="resto-name">Sorbillo</div>
+      <div class="resto-dish">🍕 Pizza napoletana</div>
+      <div class="resto-tags">
+        <span class="resto-tag tag-day">Dia 3 ou 15 · jantar</span>
+        <span class="resto-tag tag-must">⭐ Viral TikTok</span>
+        <span class="resto-tag tag-price">€€</span>
+      </div>
+    </div>
+    <div class="resto-body">
+      <div class="resto-tip">A pizzaria mais famosa de Nápoles abriu filial em Milão. Reconhecida pelo Gambero Rosso. Massa leve, bordas altas, do jeito certo. Chegar cedo ou reservar — fila possível.</div>
+      <a class="resto-map-btn" href="https://www.google.com/maps/search/Sorbillo+pizza+Milan" target="_blank">📍 Ver no Maps</a>
+    </div>
+  </div>
+
+  <div class="city-header florence">🇮🇹 Florença <small>04–06 Mar</small></div>
+
+  <div class="resto-card">
+    <div class="resto-top">
+      <div class="resto-name">Trattoria Mario</div>
+      <div class="resto-dish">🥩 Bistecca alla Fiorentina</div>
+      <div class="resto-tags">
+        <span class="resto-tag tag-day">Dia 5 · almoço</span>
+        <span class="resto-tag tag-must">⭐ Imperdível</span>
+        <span class="resto-tag tag-free">Sem reserva</span>
+        <span class="resto-tag tag-price">€€</span>
+      </div>
+    </div>
+    <div class="resto-body">
+      <div class="resto-tip">Icônico desde 1953. Mesa compartilhada com strangers — faz parte do charme. Sem reserva: chegar antes das 12h. Pede mínimo 600g na bistecca, ao ponto ou malpassado.</div>
+      <a class="resto-map-btn" href="https://www.google.com/maps/search/Trattoria+Mario+Florence" target="_blank">📍 Ver no Maps</a>
+    </div>
+  </div>
+
+  <div class="resto-card">
+    <div class="resto-top">
+      <div class="resto-name">Mercato Centrale — Lampredotto</div>
+      <div class="resto-dish">🥪 Lampredotto (street food)</div>
+      <div class="resto-tags">
+        <span class="resto-tag tag-day">Dia 5 · almoço</span>
+        <span class="resto-tag tag-price">€</span>
+      </div>
+    </div>
+    <div class="resto-body">
+      <div class="resto-tip">O street food mais típico de Florença — sanduíche de miolo de boi cozido. Divide opiniões, mas é a experiência mais local possível. O Mercato Centrale em si já vale a visita.</div>
+      <a class="resto-map-btn" href="https://www.google.com/maps/search/Mercato+Centrale+Firenze" target="_blank">📍 Ver no Maps</a>
+    </div>
+  </div>
+
+  <div class="resto-card">
+    <div class="resto-top">
+      <div class="resto-name">Trattoria 4 Leoni</div>
+      <div class="resto-dish">🍝 Cozinha toscana clássica</div>
+      <div class="resto-tags">
+        <span class="resto-tag tag-day">Dia 4 · jantar ao chegar</span>
+        <span class="resto-tag tag-price">€€</span>
+      </div>
+    </div>
+    <div class="resto-body">
+      <div class="resto-tip">Piazza della Passera, pertinho do Palazzo Pitti. Ambiente aconchegante, cozinha toscana autêntica. Boa opção pra primeira noite em Florença — reserva recomendada.</div>
+      <a class="resto-map-btn" href="https://www.google.com/maps/search/Trattoria+4+Leoni+Firenze" target="_blank">📍 Ver no Maps</a>
+    </div>
+  </div>
+
+  <div class="city-header rome">🇮🇹 Roma <small>06–09 Mar</small></div>
+
+  <div class="resto-card">
+    <div class="resto-top">
+      <div class="resto-name">Felice a Testaccio</div>
+      <div class="resto-dish">🍝 Cacio e Pepe</div>
+      <div class="resto-tags">
+        <span class="resto-tag tag-day">Dia 7 · jantar</span>
+        <span class="resto-tag tag-must">⭐ Imperdível</span>
+        <span class="resto-tag tag-res">⚠️ Reserva obrigatória</span>
+        <span class="resto-tag tag-price">€€€</span>
+      </div>
+    </div>
+    <div class="resto-body">
+      <div class="resto-tip">O cacio e pepe mais falado de Roma. 200g de tonnarelli, pecorino, parmigiano e pimenta — simples e perfeito. Esgota semanas antes: reservar agora via site ou telefone.</div>
+      <a class="resto-map-btn" href="https://www.google.com/maps/search/Felice+a+Testaccio+Roma" target="_blank">📍 Ver no Maps</a>
+    </div>
+  </div>
+
+  <div class="resto-card">
+    <div class="resto-top">
+      <div class="resto-name">Hostaria al Gladiatore</div>
+      <div class="resto-dish">🍝 Rigatoni alla Coda + Cacio e Pepe</div>
+      <div class="resto-tags">
+        <span class="resto-tag tag-day">Dia 7 · almoço (pós-Coliseu)</span>
+        <span class="resto-tag tag-price">€€</span>
+      </div>
+    </div>
+    <div class="resto-body">
+      <div class="resto-tip">Pertinho do Coliseu, mas sem cilada de turista. Comida caseira romana de verdade. O rigatoni alla coda (rabada desfiada) é o prato menos famoso mas mais gostoso segundo quem foi.</div>
+      <a class="resto-map-btn" href="https://www.google.com/maps/search/Hostaria+al+Gladiatore+Roma" target="_blank">📍 Ver no Maps</a>
+    </div>
+  </div>
+
+  <div class="resto-card">
+    <div class="resto-top">
+      <div class="resto-name">Tonnarello</div>
+      <div class="resto-dish">🍝 Carbonara + Amatriciana</div>
+      <div class="resto-tags">
+        <span class="resto-tag tag-day">Dia 8 · jantar em Trastevere</span>
+        <span class="resto-tag tag-must">⭐ Viral</span>
+        <span class="resto-tag tag-free">Sem reserva</span>
+        <span class="resto-tag tag-price">€€</span>
+      </div>
+    </div>
+    <div class="resto-body">
+      <div class="resto-tip">No Trastevere — o bairro mais bonito de Roma à noite. Fila na porta mas vale. Turístico sim, pasta boa. Combina com passeio noturno pelas ruelas do bairro depois do jantar.</div>
+      <a class="resto-map-btn" href="https://www.google.com/maps/search/Tonnarello+Trastevere+Roma" target="_blank">📍 Ver no Maps</a>
+    </div>
+  </div>
+
+  <div class="city-header paris">🇫🇷 Paris <small>09–13 Mar</small></div>
+
+  <div class="resto-card">
+    <div class="resto-top">
+      <div class="resto-name">Du Pain et des Idées</div>
+      <div class="resto-dish">🥐 Croissant + Pain des Amis</div>
+      <div class="resto-tags">
+        <span class="resto-tag tag-day">Dia 10 ou 12 · manhã</span>
+        <span class="resto-tag tag-must">⭐ Melhor de Paris</span>
+        <span class="resto-tag tag-price">€</span>
+      </div>
+    </div>
+    <div class="resto-body">
+      <div class="resto-tip">Consistentemente eleito o melhor croissant de Paris. Canal Saint-Martin, bairro charmoso. ⚠️ Fecha sábado e domingo — planejar para dia de semana (Dia 10 = 2a feira ✅).</div>
+      <a class="resto-map-btn" href="https://www.google.com/maps/search/Du+Pain+et+des+Idees+Paris" target="_blank">📍 Ver no Maps</a>
+    </div>
+  </div>
+
+  <div class="resto-card">
+    <div class="resto-top">
+      <div class="resto-name">Terroirs d'Avenir</div>
+      <div class="resto-dish">🥐 Croissant</div>
+      <div class="resto-tags">
+        <span class="resto-tag tag-day">Dia 10 · manhã</span>
+        <span class="resto-tag tag-must">⭐ Viral TikTok</span>
+        <span class="resto-tag tag-price">€</span>
+      </div>
+    </div>
+    <div class="resto-body">
+      <div class="resto-tip">Top 5 croissants de Paris segundo o TikTok. 2º arrondissement, próximo ao Louvre e Marais — fácil de encaixar na visita ao centro da cidade.</div>
+      <a class="resto-map-btn" href="https://www.google.com/maps/search/Terroirs+d'Avenir+Paris" target="_blank">📍 Ver no Maps</a>
+    </div>
+  </div>
+
+  <div class="resto-card">
+    <div class="resto-top">
+      <div class="resto-name">Le Relais de l'Entrecôte</div>
+      <div class="resto-dish">🥩 Steak + Frites (molho secreto)</div>
+      <div class="resto-tags">
+        <span class="resto-tag tag-day">Dia 12 · jantar</span>
+        <span class="resto-tag tag-must">⭐ Clássico parisiense</span>
+        <span class="resto-tag tag-free">Sem reserva</span>
+        <span class="resto-tag tag-price">€€</span>
+      </div>
+    </div>
+    <div class="resto-body">
+      <div class="resto-tip">Menu único: steak com frites e molho secreto (ninguém sabe a receita). Fila na porta mas gira rápido. Sem escolhas = sem stress. Um ritual parisiense que não dá pra perder.</div>
+      <a class="resto-map-btn" href="https://www.google.com/maps/search/Le+Relais+de+l'Entrecote+Paris" target="_blank">📍 Ver no Maps</a>
+    </div>
   </div>
 
 </div>
