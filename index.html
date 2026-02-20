@@ -1,0 +1,744 @@
+<!DOCTYPE html>
+<html lang="pt-BR">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0">
+<meta name="apple-mobile-web-app-capable" content="yes">
+<meta name="apple-mobile-web-app-status-bar-style" content="black-translucent">
+<title>Europa 2026 ✈️</title>
+<style>
+  :root {
+    --milan: #3B82F6;
+    --florence: #F97316;
+    --rome: #EF4444;
+    --paris: #EC4899;
+    --transit: #6B7280;
+    --bg: #0F172A;
+    --surface: #1E293B;
+    --surface2: #293548;
+    --text: #F1F5F9;
+    --muted: #94A3B8;
+    --border: #334155;
+    --radius: 14px;
+  }
+  * { box-sizing: border-box; margin: 0; padding: 0; }
+  body {
+    font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', sans-serif;
+    background: var(--bg);
+    color: var(--text);
+    padding: 0 0 60px;
+    line-height: 1.5;
+  }
+
+  /* HEADER */
+  .header {
+    background: linear-gradient(135deg, #1a1a2e 0%, #16213e 50%, #0f3460 100%);
+    padding: 48px 20px 32px;
+    text-align: center;
+    position: relative;
+    overflow: hidden;
+  }
+  .header::before {
+    content: '';
+    position: absolute; inset: 0;
+    background: url("data:image/svg+xml,%3Csvg width='60' height='60' viewBox='0 0 60 60' xmlns='http://www.w3.org/2000/svg'%3E%3Cg fill='none' fill-rule='evenodd'%3E%3Cg fill='%23ffffff' fill-opacity='0.03'%3E%3Cpath d='M36 34v-4h-2v4h-4v2h4v4h2v-4h4v-2h-4zm0-30V0h-2v4h-4v2h4v4h2V6h4V4h-4zM6 34v-4H4v4H0v2h4v4h2v-4h4v-2H6zM6 4V0H4v4H0v2h4v4h2V6h4V4H6z'/%3E%3C/g%3E%3C/g%3E%3C/svg%3E");
+  }
+  .header h1 { font-size: 28px; font-weight: 700; letter-spacing: -0.5px; }
+  .header .subtitle { color: #93C5FD; margin-top: 6px; font-size: 14px; }
+  .header .dates { 
+    display: inline-block;
+    background: rgba(255,255,255,0.1);
+    border: 1px solid rgba(255,255,255,0.15);
+    border-radius: 20px;
+    padding: 6px 16px;
+    font-size: 13px;
+    margin-top: 12px;
+    color: #E2E8F0;
+  }
+
+  /* CITY LEGEND */
+  .legend {
+    display: flex;
+    gap: 8px;
+    padding: 12px 16px;
+    overflow-x: auto;
+    background: var(--surface);
+    border-bottom: 1px solid var(--border);
+    scrollbar-width: none;
+  }
+  .legend::-webkit-scrollbar { display: none; }
+  .badge {
+    white-space: nowrap;
+    padding: 4px 12px;
+    border-radius: 20px;
+    font-size: 12px;
+    font-weight: 600;
+  }
+  .badge.milan    { background: rgba(59,130,246,.2); color: #93C5FD; border: 1px solid rgba(59,130,246,.3); }
+  .badge.florence { background: rgba(249,115,22,.2); color: #FDBA74; border: 1px solid rgba(249,115,22,.3); }
+  .badge.rome     { background: rgba(239,68,68,.2);  color: #FCA5A5; border: 1px solid rgba(239,68,68,.3); }
+  .badge.paris    { background: rgba(236,72,153,.2); color: #F9A8D4; border: 1px solid rgba(236,72,153,.3); }
+  .badge.transit  { background: rgba(107,114,128,.2); color: #D1D5DB; border: 1px solid rgba(107,114,128,.3); }
+
+  /* TABS */
+  .tabs {
+    display: flex;
+    background: var(--surface);
+    border-bottom: 1px solid var(--border);
+    position: sticky; top: 0; z-index: 100;
+  }
+  .tab {
+    flex: 1; padding: 12px 8px; text-align: center;
+    font-size: 12px; font-weight: 600; color: var(--muted);
+    cursor: pointer; border-bottom: 2px solid transparent;
+    transition: all 0.2s;
+  }
+  .tab.active { color: #60A5FA; border-bottom-color: #60A5FA; }
+
+  /* SECTIONS */
+  .section { display: none; }
+  .section.active { display: block; }
+
+  /* QUICK REF */
+  .quick-ref { padding: 16px; }
+  .card {
+    background: var(--surface);
+    border: 1px solid var(--border);
+    border-radius: var(--radius);
+    overflow: hidden;
+    margin-bottom: 12px;
+  }
+  .card-header {
+    padding: 12px 16px;
+    font-size: 13px;
+    font-weight: 700;
+    letter-spacing: 0.5px;
+    text-transform: uppercase;
+    background: var(--surface2);
+    color: var(--muted);
+    border-bottom: 1px solid var(--border);
+  }
+  .ref-row {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    padding: 11px 16px;
+    border-bottom: 1px solid var(--border);
+    gap: 8px;
+  }
+  .ref-row:last-child { border-bottom: none; }
+  .ref-label { font-size: 13px; color: var(--muted); flex: 1; }
+  .ref-code {
+    font-family: 'SF Mono', 'Courier New', monospace;
+    font-size: 13px;
+    background: rgba(96,165,250,.15);
+    color: #93C5FD;
+    padding: 3px 8px;
+    border-radius: 6px;
+    font-weight: 600;
+    cursor: pointer;
+    user-select: all;
+  }
+  .ref-code:active { background: rgba(96,165,250,.3); }
+
+  /* FLIGHTS TABLE */
+  .flight-row {
+    display: flex;
+    align-items: center;
+    padding: 12px 16px;
+    border-bottom: 1px solid var(--border);
+    gap: 12px;
+  }
+  .flight-row:last-child { border-bottom: none; }
+  .flight-date { font-size: 11px; color: var(--muted); width: 36px; }
+  .flight-info { flex: 1; }
+  .flight-route { font-size: 14px; font-weight: 600; }
+  .flight-time { font-size: 12px; color: var(--muted); margin-top: 2px; }
+  .flight-code { font-size: 11px; font-family: monospace; color: #93C5FD; }
+
+  /* ITINERARY */
+  .itinerary { padding: 12px 16px; }
+  details { margin-bottom: 10px; }
+  details[open] summary .chevron { transform: rotate(90deg); }
+  summary {
+    display: flex;
+    align-items: center;
+    gap: 10px;
+    padding: 14px 16px;
+    background: var(--surface);
+    border: 1px solid var(--border);
+    border-radius: var(--radius);
+    cursor: pointer;
+    list-style: none;
+    user-select: none;
+    -webkit-tap-highlight-color: transparent;
+  }
+  summary::-webkit-details-marker { display: none; }
+  details[open] summary {
+    border-bottom-left-radius: 0;
+    border-bottom-right-radius: 0;
+    border-bottom-color: transparent;
+  }
+  .day-badge {
+    font-size: 11px;
+    font-weight: 700;
+    padding: 3px 8px;
+    border-radius: 8px;
+    white-space: nowrap;
+  }
+  .summary-title { flex: 1; font-size: 14px; font-weight: 600; }
+  .summary-sub { font-size: 12px; color: var(--muted); }
+  .chevron { color: var(--muted); font-size: 12px; transition: transform 0.2s; }
+
+  .day-content {
+    background: var(--surface);
+    border: 1px solid var(--border);
+    border-top: none;
+    border-bottom-left-radius: var(--radius);
+    border-bottom-right-radius: var(--radius);
+    padding: 4px 0 8px;
+  }
+  .event {
+    display: flex;
+    gap: 12px;
+    padding: 10px 16px;
+    border-bottom: 1px solid rgba(255,255,255,0.04);
+  }
+  .event:last-child { border-bottom: none; }
+  .event-time {
+    font-size: 11px;
+    color: var(--muted);
+    width: 44px;
+    font-family: monospace;
+    padding-top: 2px;
+    flex-shrink: 0;
+  }
+  .event-body { flex: 1; }
+  .event-title { font-size: 14px; }
+  .event-detail { font-size: 12px; color: var(--muted); margin-top: 2px; }
+  .map-link {
+    display: inline-flex;
+    align-items: center;
+    gap: 4px;
+    font-size: 11px;
+    color: #60A5FA;
+    text-decoration: none;
+    margin-top: 4px;
+    padding: 3px 8px;
+    background: rgba(96,165,250,.1);
+    border-radius: 6px;
+    border: 1px solid rgba(96,165,246,.2);
+  }
+  .alert {
+    margin: 8px 16px;
+    padding: 10px 12px;
+    background: rgba(234,179,8,.1);
+    border: 1px solid rgba(234,179,8,.3);
+    border-radius: 10px;
+    font-size: 12px;
+    color: #FDE047;
+  }
+
+  /* CHECKLIST */
+  .checklist { padding: 16px; }
+  .check-section { margin-bottom: 16px; }
+  .check-title {
+    font-size: 12px;
+    font-weight: 700;
+    text-transform: uppercase;
+    letter-spacing: 0.5px;
+    color: var(--muted);
+    padding: 0 4px;
+    margin-bottom: 8px;
+  }
+  .check-item {
+    display: flex;
+    align-items: flex-start;
+    gap: 12px;
+    padding: 11px 14px;
+    background: var(--surface);
+    border: 1px solid var(--border);
+    border-radius: 10px;
+    margin-bottom: 6px;
+    cursor: pointer;
+    -webkit-tap-highlight-color: transparent;
+    transition: opacity 0.2s;
+  }
+  .check-item.done { opacity: 0.45; }
+  .check-item.done .check-text { text-decoration: line-through; }
+  .check-box {
+    width: 20px; height: 20px;
+    border: 2px solid var(--border);
+    border-radius: 6px;
+    flex-shrink: 0;
+    display: flex; align-items: center; justify-content: center;
+    font-size: 12px;
+    background: transparent;
+    transition: all 0.15s;
+    margin-top: 1px;
+  }
+  .check-item.done .check-box {
+    background: #22C55E;
+    border-color: #22C55E;
+  }
+  .check-text { font-size: 14px; flex: 1; }
+
+  /* AIRBNB CARDS */
+  .stays { padding: 16px; }
+  .stay-card {
+    background: var(--surface);
+    border: 1px solid var(--border);
+    border-radius: var(--radius);
+    margin-bottom: 12px;
+    overflow: hidden;
+  }
+  .stay-header {
+    padding: 14px 16px;
+    display: flex;
+    align-items: center;
+    gap: 10px;
+    border-bottom: 1px solid var(--border);
+  }
+  .stay-icon {
+    width: 38px; height: 38px;
+    border-radius: 10px;
+    display: flex; align-items: center; justify-content: center;
+    font-size: 18px;
+    flex-shrink: 0;
+  }
+  .stay-name { font-size: 14px; font-weight: 700; }
+  .stay-dates { font-size: 12px; color: var(--muted); }
+  .stay-row {
+    padding: 9px 16px;
+    display: flex; gap: 8px;
+    border-bottom: 1px solid rgba(255,255,255,0.04);
+    font-size: 13px;
+    align-items: flex-start;
+  }
+  .stay-row:last-child { border-bottom: none; }
+  .stay-label { color: var(--muted); width: 70px; flex-shrink: 0; }
+  .stay-value { flex: 1; }
+  .highlight { color: #FDE047; font-weight: 600; }
+</style>
+</head>
+<body>
+
+<div class="header">
+  <div class="dates">01 – 16 de Março de 2026</div>
+  <h1>✈️ Europa 2026</h1>
+  <div class="subtitle">Leco & Gabi · 16 dias · 4 países · 5 cidades</div>
+</div>
+
+<div class="legend">
+  <span class="badge milan">🇮🇹 Milão</span>
+  <span class="badge florence">🇮🇹 Florença</span>
+  <span class="badge rome">🇮🇹 Roma</span>
+  <span class="badge paris">🇫🇷 Paris</span>
+  <span class="badge transit">✈️ Trânsito</span>
+</div>
+
+<div class="tabs">
+  <div class="tab active" onclick="showTab('roteiro')">📅 Roteiro</div>
+  <div class="tab" onclick="showTab('refs')">🔑 Códigos</div>
+  <div class="tab" onclick="showTab('stays')">🏠 Hospedagem</div>
+  <div class="tab" onclick="showTab('checklist')">✅ Checklist</div>
+</div>
+
+<!-- ===================== ROTEIRO ===================== -->
+<div id="roteiro" class="section active itinerary">
+
+  <details>
+    <summary>
+      <span class="day-badge badge transit">Dia 1</span>
+      <div><div class="summary-title">Embarque 🛫</div><div class="summary-sub">Sáb 01/03 · CNF → GRU → MXP</div></div>
+      <span class="chevron">›</span>
+    </summary>
+    <div class="day-content">
+      <div class="event"><div class="event-time">11:05</div><div class="event-body"><div class="event-title">✈️ LA3039: CNF → CGH</div><div class="event-detail">Cód: UMWVRD · Leco GF497058 · Gabi GG827112</div></div></div>
+      <div class="event"><div class="event-time">18:00</div><div class="event-body"><div class="event-title">✈️ LA8072: GRU → Milão MXP</div><div class="event-detail">Voo noturno · Chega 02/03 às 09:15 · Cód: UMWVRD</div></div></div>
+    </div>
+  </details>
+
+  <details>
+    <summary>
+      <span class="day-badge badge milan">Dia 2</span>
+      <div><div class="summary-title">Chegada em Milão 🇮🇹</div><div class="summary-sub">Dom 02/03 · Smart Central Loft</div></div>
+      <span class="chevron">›</span>
+    </summary>
+    <div class="day-content">
+      <div class="alert">⚠️ Check-in online Vikey obrigatório (por lei) antes de chegar — Cód: PHEB7ABY</div>
+      <div class="event"><div class="event-time">09:15</div><div class="event-body"><div class="event-title">🛬 Pouso em Malpensa (MXP)</div></div></div>
+      <div class="event"><div class="event-time">~10:15</div><div class="event-body"><div class="event-title">🚌 Terravision bus → Centrale</div><div class="event-detail">~1h10 · ~€5–8/pessoa · comprar online terravision.eu · parte em frente ao terminal</div><a class="map-link" href="https://www.google.com/maps/dir/Milan+Malpensa+Airport/Milano+Centrale+Station">📍 Ver trajeto</a></div></div>
+      <div class="event"><div class="event-time">~11:30</div><div class="event-body"><div class="event-title">🧳 Deixar malas no Airbnb</div><div class="event-detail">Confirmar com Claudio se pode deixar malas antes das 14h</div><a class="map-link" href="https://www.google.com/maps/search/Via+Copernico+49+Milan">📍 Via Copernico 49</a></div></div>
+      <div class="event"><div class="event-time">Centro</div><div class="event-body"><div class="event-title">🚇 Airbnb → Duomo: M3 República</div><div class="event-detail">🚶 7 min a pé até estação Repubblica (M3) → 3 paradas → Duomo · €2/pessoa · ~15 min total</div><a class="map-link" href="https://www.google.com/maps/dir/Via+Copernico+49+Milan/Duomo+Metro+Station+Milan">📍 Ver trajeto</a></div></div>
+      <div class="event"><div class="event-time">12:00</div><div class="event-body"><div class="event-title">🍕 Almoço — Di Gennaro</div><div class="event-detail">Pizzeria Di Gennaro · Via Santa Radegonda 14</div><a class="map-link" href="https://www.google.com/maps/search/Pizzeria+Di+Gennaro+Via+Santa+Radegonda+Milan">📍 Ver no mapa</a></div></div>
+      <div class="event"><div class="event-time">Tarde</div><div class="event-body"><div class="event-title">🏛️ Duomo + Galleria</div><a class="map-link" href="https://www.google.com/maps/search/Piazza+del+Duomo+Milan">📍 Ver no mapa</a></div></div>
+      <div class="event"><div class="event-time">Tarde</div><div class="event-body"><div class="event-title">👕 Uniqlo · Via Torino 12</div><a class="map-link" href="https://www.google.com/maps/search/Uniqlo+Via+Torino+Milan">📍 Ver no mapa</a></div></div>
+      <div class="event"><div class="event-time">Tarde</div><div class="event-body"><div class="event-title">🕶️ Ray-Ban Meta — Salmoiraghi e Viganò</div><a class="map-link" href="https://www.google.com/maps/search/Salmoiraghi+Vigano+Milan+centro">📍 Ver no mapa</a></div></div>
+      <div class="event"><div class="event-time">Tarde</div><div class="event-body"><div class="event-title">🛒 Pam Supermercado</div><div class="event-detail">Via Medici 10 · comida pro Lake Como</div><a class="map-link" href="https://www.google.com/maps/search/Pam+Via+Medici+Milan">📍 Ver no mapa</a></div></div>
+      <div class="event"><div class="event-time">14:00</div><div class="event-body"><div class="event-title">🧳 Deixar bagagem</div><div class="event-detail">Via Copernico 49 (a partir das 14h)</div></div></div>
+      <div class="event"><div class="event-time">16:00</div><div class="event-body"><div class="event-title">🏠 Check-in Smart Central Loft</div><div class="event-detail">Armário de chaves automático · Silêncio a partir das 22h</div></div></div>
+    </div>
+  </details>
+
+  <details>
+    <summary>
+      <span class="day-badge badge milan">Dia 3</span>
+      <div><div class="summary-title">Day Trip Lake Como 🏔️</div><div class="summary-sub">Seg 03/03 · Varenna & Bellagio</div></div>
+      <span class="chevron">›</span>
+    </summary>
+    <div class="day-content">
+      <div class="event"><div class="event-time">Manhã</div><div class="event-body"><div class="event-title">🚆 Trem para Varenna</div><div class="event-detail">Milano Centrale → Varenna-Esino · ~1h</div><a class="map-link" href="https://www.google.com/maps/dir/Milano+Centrale+Station/Varenna+Esino+Station">📍 Ver trajeto</a></div></div>
+      <div class="event"><div class="event-time">Manhã</div><div class="event-body"><div class="event-title">⛵ Passeio de barco</div><div class="event-detail">Varenna → Bellagio → Menaggio</div><a class="map-link" href="https://www.google.com/maps/dir/Varenna+Italy/Bellagio+Lake+Como">📍 Ver no mapa</a></div></div>
+      <div class="event"><div class="event-time">Almoço</div><div class="event-body"><div class="event-title">🍽️ Restaurante com vista pro lago</div><div class="event-detail">Bellagio — reservar com antecedência</div></div></div>
+      <div class="event"><div class="event-time">Tarde</div><div class="event-body"><div class="event-title">🏘️ Explorar Bellagio</div><a class="map-link" href="https://www.google.com/maps/search/Bellagio+Lake+Como">📍 Ver no mapa</a></div></div>
+      <div class="event"><div class="event-time">Noite</div><div class="event-body"><div class="event-title">🚆 Volta para Milão</div></div></div>
+    </div>
+  </details>
+
+  <details>
+    <summary>
+      <span class="day-badge badge florence">Dia 4</span>
+      <div><div class="summary-title">Milão → Florença 🇮🇹</div><div class="summary-sub">Ter 04/03 · San Frediano</div></div>
+      <span class="chevron">›</span>
+    </summary>
+    <div class="day-content">
+      <div class="event"><div class="event-time">até 10h</div><div class="event-body"><div class="event-title">🧳 Checkout Milão 1</div><div class="event-detail">Via Copernico 49</div></div></div>
+      <div class="event"><div class="event-time">Manhã</div><div class="event-body"><div class="event-title">🚄 Trem Milão → Florença</div><div class="event-detail">Milano Centrale → Firenze SMN · ~1h45</div><a class="map-link" href="https://www.google.com/maps/dir/Milano+Centrale+Station/Firenze+Santa+Maria+Novella">📍 Ver trajeto</a></div></div>
+      <div class="event"><div class="event-time">Tarde</div><div class="event-body"><div class="event-title">🏠 Check-in San Frediano Boutique Nº9</div><div class="event-detail">Checkout antes das 10h (06/03)</div></div></div>
+      <div class="event"><div class="event-time">Tarde</div><div class="event-body"><div class="event-title">🌉 Ponte Vecchio ao pôr do sol</div><a class="map-link" href="https://www.google.com/maps/search/Ponte+Vecchio+Florence">📍 Ver no mapa</a></div></div>
+      <div class="event"><div class="event-time">Noite</div><div class="event-body"><div class="event-title">🍷 Jantar em Oltrarno</div><div class="event-detail">Bairro local — melhor que o centro turístico</div><a class="map-link" href="https://www.google.com/maps/search/restaurants+Oltrarno+Florence">📍 Ver restaurantes</a></div></div>
+    </div>
+  </details>
+
+  <details>
+    <summary>
+      <span class="day-badge badge florence">Dia 5</span>
+      <div><div class="summary-title">Florença 🖼️</div><div class="summary-sub">Qua 05/03 · Uffizi & Michelangelo</div></div>
+      <span class="chevron">›</span>
+    </summary>
+    <div class="day-content">
+      <div class="alert">⚠️ Reservar Uffizi online com antecedência — esgota rápido!</div>
+      <div class="event"><div class="event-time">Manhã</div><div class="event-body"><div class="event-title">🖼️ Galleria degli Uffizi</div><a class="map-link" href="https://www.google.com/maps/search/Uffizi+Gallery+Florence">📍 Ver no mapa</a></div></div>
+      <div class="event"><div class="event-time">Tarde</div><div class="event-body"><div class="event-title">⛰️ Piazzale Michelangelo</div><div class="event-detail">Melhor vista de Florença</div><a class="map-link" href="https://www.google.com/maps/dir/Uffizi+Gallery+Florence/Piazzale+Michelangelo+Florence">📍 Ver trajeto</a></div></div>
+      <div class="event"><div class="event-time">Noite</div><div class="event-body"><div class="event-title">🥩 Bistecca alla Fiorentina</div><div class="event-detail">Obrigatório pelo menos uma vez</div><a class="map-link" href="https://www.google.com/maps/search/bistecca+alla+fiorentina+Florence">📍 Ver restaurantes</a></div></div>
+    </div>
+  </details>
+
+  <details>
+    <summary>
+      <span class="day-badge badge rome">Dia 6</span>
+      <div><div class="summary-title">Florença → Roma 🇮🇹</div><div class="summary-sub">Qui 06/03 · Trastevere</div></div>
+      <span class="chevron">›</span>
+    </summary>
+    <div class="day-content">
+      <div class="event"><div class="event-time">até 10h</div><div class="event-body"><div class="event-title">🧳 Checkout Florença</div></div></div>
+      <div class="event"><div class="event-time">Manhã</div><div class="event-body"><div class="event-title">🚄 Trem Florença → Roma</div><div class="event-detail">Firenze SMN → Roma Termini · ~1h30</div><a class="map-link" href="https://www.google.com/maps/dir/Firenze+Santa+Maria+Novella/Roma+Termini">📍 Ver trajeto</a></div></div>
+      <div class="event"><div class="event-time">Tarde</div><div class="event-body"><div class="event-title">🏠 Check-in Camera c/ bagno e giardino</div><div class="event-detail">3 noites · R$1.356,09</div></div></div>
+      <div class="event"><div class="event-time">Noite</div><div class="event-body"><div class="event-title">🍝 Jantar em Trastevere</div><div class="event-detail">Bairro mais charmoso de Roma</div><a class="map-link" href="https://www.google.com/maps/search/restaurants+Trastevere+Rome">📍 Ver restaurantes</a></div></div>
+    </div>
+  </details>
+
+  <details>
+    <summary>
+      <span class="day-badge badge rome">Dia 7</span>
+      <div><div class="summary-title">Roma — Clássicos 🏛️</div><div class="summary-sub">Sex 07/03 · Coliseu · Vaticano · Trevi</div></div>
+      <span class="chevron">›</span>
+    </summary>
+    <div class="day-content">
+      <div class="alert">⚠️ Reservar ingressos online: Coliseu e Vaticano — filas enormes sem reserva!</div>
+      <div class="event"><div class="event-time">Manhã</div><div class="event-body"><div class="event-title">🏟️ Coliseu + Foro Romano</div><a class="map-link" href="https://www.google.com/maps/search/Colosseum+Rome">📍 Ver no mapa</a></div></div>
+      <div class="event"><div class="event-time">Tarde</div><div class="event-body"><div class="event-title">⛪ Vaticano — Museus + São Pedro</div><a class="map-link" href="https://www.google.com/maps/dir/Colosseum+Rome/Vatican+City">📍 Ver trajeto</a></div></div>
+      <div class="event"><div class="event-time">Noite</div><div class="event-body"><div class="event-title">🌊 Fontana di Trevi</div><div class="event-detail">Mais bonita e menos lotada à noite</div><a class="map-link" href="https://www.google.com/maps/dir/Vatican+City/Trevi+Fountain+Rome">📍 Ver trajeto</a></div></div>
+    </div>
+  </details>
+
+  <details>
+    <summary>
+      <span class="day-badge badge rome">Dia 8</span>
+      <div><div class="summary-title">Roma · 💃 Dia da Mulher 🌹</div><div class="summary-sub">Sáb 08/03 · Pantheon · Navona</div></div>
+      <span class="chevron">›</span>
+    </summary>
+    <div class="day-content">
+      <div class="event"><div class="event-time">Manhã</div><div class="event-body"><div class="event-title">🏛️ Pantheon</div><div class="event-detail">Chegar cedo</div><a class="map-link" href="https://www.google.com/maps/search/Pantheon+Rome">📍 Ver no mapa</a></div></div>
+      <div class="event"><div class="event-time">Manhã</div><div class="event-body"><div class="event-title">🍦 Piazza Navona + gelato</div><a class="map-link" href="https://www.google.com/maps/dir/Pantheon+Rome/Piazza+Navona+Rome">📍 Ver trajeto</a></div></div>
+      <div class="event"><div class="event-time">Tarde</div><div class="event-body"><div class="event-title">🚶 Trastevere de dia</div><a class="map-link" href="https://www.google.com/maps/search/Trastevere+Rome">📍 Ver no mapa</a></div></div>
+      <div class="event"><div class="event-time">Noite</div><div class="event-body"><div class="event-title">🌹 Jantar especial — Dia da Mulher</div><div class="event-detail">Reservar com antecedência!</div></div></div>
+    </div>
+  </details>
+
+  <details>
+    <summary>
+      <span class="day-badge badge transit">Dia 9</span>
+      <div><div class="summary-title">Roma → Paris 🇫🇷</div><div class="summary-sub">Dom 09/03 · Transavia QE75XJ</div></div>
+      <span class="chevron">›</span>
+    </summary>
+    <div class="day-content">
+      <div class="event"><div class="event-time">Manhã</div><div class="event-body"><div class="event-title">🧳 Checkout Roma + Transfer FCO</div></div></div>
+      <div class="event"><div class="event-time">12:10</div><div class="event-body"><div class="event-title">✈️ Transavia FCO → Paris Orly</div><div class="event-detail">Cód: QE75XJ · Chega 14:25 · €162</div><a class="map-link" href="https://www.google.com/maps/dir/Rome+Fiumicino+Airport/Paris+Orly+Airport">📍 Ver rota</a></div></div>
+      <div class="event"><div class="event-time">~15:00</div><div class="event-body"><div class="event-title">🚌 ORY → Paris centro</div><div class="event-detail">Orlybus → Denfert-Rochereau · ~30 min</div><a class="map-link" href="https://www.google.com/maps/dir/Paris+Orly+Airport/Paris+France">📍 Ver trajeto</a></div></div>
+      <div class="event"><div class="event-time">Tarde</div><div class="event-body"><div class="event-title">🏠 Casa da Ana Luiza</div><div class="event-detail">Mãe do Lorenzo, amigo de infância do Leco</div></div></div>
+      <div class="event"><div class="event-time">Noite</div><div class="event-body"><div class="event-title">🗼 Torre Eiffel iluminada</div><a class="map-link" href="https://www.google.com/maps/search/Eiffel+Tower+Paris">📍 Ver no mapa</a></div></div>
+    </div>
+  </details>
+
+  <details>
+    <summary>
+      <span class="day-badge badge paris">Dia 10</span>
+      <div><div class="summary-title">Paris — Notre Dame & Sena 🛶</div><div class="summary-sub">Seg 10/03 · Opera · Sainte-Chapelle</div></div>
+      <span class="chevron">›</span>
+    </summary>
+    <div class="day-content">
+      <div class="event"><div class="event-time">Manhã</div><div class="event-body"><div class="event-title">🎭 Opera Garnier — Palais Garnier</div><a class="map-link" href="https://www.google.com/maps/search/Palais+Garnier+Paris">📍 Ver no mapa</a></div></div>
+      <div class="event"><div class="event-time">Tarde</div><div class="event-body"><div class="event-title">⛪ Notre Dame</div><div class="event-detail">Reaberta em 2024 após o incêndio</div><a class="map-link" href="https://www.google.com/maps/dir/Palais+Garnier+Paris/Notre-Dame+Cathedral+Paris">📍 Ver trajeto</a></div></div>
+      <div class="event"><div class="event-time">Tarde</div><div class="event-body"><div class="event-title">💒 Sainte-Chapelle</div><div class="event-detail">Vitrais medievais incríveis</div><a class="map-link" href="https://www.google.com/maps/dir/Notre-Dame+Cathedral+Paris/Sainte-Chapelle+Paris">📍 Ver trajeto</a></div></div>
+      <div class="event"><div class="event-time">Noite</div><div class="event-body"><div class="event-title">🛶 Barco no Sena — Bateaux Parisiens</div><div class="event-detail">Paris iluminada à noite</div><a class="map-link" href="https://www.google.com/maps/search/Bateaux+Parisiens+Paris">📍 Ver no mapa</a></div></div>
+    </div>
+  </details>
+
+  <details>
+    <summary>
+      <span class="day-badge badge paris">Dia 11</span>
+      <div><div class="summary-title">Disneyland Paris 🎢</div><div class="summary-sub">Ter 11/03 · Dia inteiro</div></div>
+      <span class="chevron">›</span>
+    </summary>
+    <div class="day-content">
+      <div class="event"><div class="event-time">Dia todo</div><div class="event-body"><div class="event-title">🎢 Disneyland Paris</div><div class="event-detail">Booking: 32991570 · €168 · Leco + Gabi</div><div class="event-detail">RER A até Marne-la-Vallée-Chessy · ~40 min do centro</div><a class="map-link" href="https://www.google.com/maps/dir/Paris+France/Disneyland+Paris">📍 Ver trajeto</a></div></div>
+    </div>
+  </details>
+
+  <details>
+    <summary>
+      <span class="day-badge badge paris">Dia 12</span>
+      <div><div class="summary-title">Paris — Panthéon & Marais 🛍️</div><div class="summary-sub">Qua 12/03</div></div>
+      <span class="chevron">›</span>
+    </summary>
+    <div class="day-content">
+      <div class="event"><div class="event-time">Manhã</div><div class="event-body"><div class="event-title">🏛️ Panthéon de Paris</div><a class="map-link" href="https://www.google.com/maps/search/Pantheon+Paris">📍 Ver no mapa</a></div></div>
+      <div class="event"><div class="event-time">Tarde</div><div class="event-body"><div class="event-title">🌳 Parc Monceau</div><a class="map-link" href="https://www.google.com/maps/dir/Pantheon+Paris/Parc+Monceau+Paris">📍 Ver trajeto</a></div></div>
+      <div class="event"><div class="event-time">Tarde</div><div class="event-body"><div class="event-title">📺 Emily in Paris spots</div><div class="event-detail">Rue de l'Abreuvoir · Place de l'Estrapade</div><a class="map-link" href="https://www.google.com/maps/search/Rue+de+l+Abreuvoir+Montmartre+Paris">📍 Ver no mapa</a></div></div>
+      <div class="event"><div class="event-time">Tarde</div><div class="event-body"><div class="event-title">🛍️ Le Marais</div><a class="map-link" href="https://www.google.com/maps/search/Le+Marais+Paris">📍 Ver no mapa</a></div></div>
+    </div>
+  </details>
+
+  <details>
+    <summary>
+      <span class="day-badge badge transit">Dia 13</span>
+      <div><div class="summary-title">Paris → Milão 2 🇮🇹</div><div class="summary-sub">Qui 13/03 · easyJet · Bairro Nolo</div></div>
+      <span class="chevron">›</span>
+    </summary>
+    <div class="day-content">
+      <div class="event"><div class="event-time">Manhã</div><div class="event-body"><div class="event-title">🧳 Checkout Paris</div></div></div>
+      <div class="event"><div class="event-time">13:15</div><div class="event-body"><div class="event-title">✈️ easyJet ORY → Milão MXP</div><div class="event-detail">EJU3830 · Cód: KBXFSXT · Chega 14:40 · €165 · Assento 6F · 2×23kg</div><a class="map-link" href="https://www.google.com/maps/dir/Paris+Orly+Airport/Milan+Malpensa+Airport">📍 Ver rota</a></div></div>
+      <div class="event"><div class="event-time">~16:00</div><div class="event-body"><div class="event-title">🏠 Check-in Cozy Studio in Nolo</div><div class="event-detail">Bairro Nolo · Cód: HMNFY3RKZR · R$1.760,96</div></div></div>
+      <div class="event"><div class="event-time">Noite</div><div class="event-body"><div class="event-title">🍹 Aperitivo no Nolo</div><div class="event-detail">Bairro emergente — bares e restaurantes incríveis</div><a class="map-link" href="https://www.google.com/maps/search/aperitivo+Nolo+Milan">📍 Ver no mapa</a></div></div>
+    </div>
+  </details>
+
+  <details>
+    <summary>
+      <span class="day-badge badge milan">Dia 14</span>
+      <div><div class="summary-title">Day Trip St. Moritz ❄️</div><div class="summary-sub">Sex 14/03 · Bernina Express · Suíça</div></div>
+      <span class="chevron">›</span>
+    </summary>
+    <div class="day-content">
+      <div class="event"><div class="event-time">Manhã</div><div class="event-body"><div class="event-title">🚆 Bernina Express → St. Moritz</div><div class="event-detail">Centrale → Tirano → St. Moritz · ~3h · paisagem de cinema</div><a class="map-link" href="https://www.google.com/maps/dir/Milano+Centrale/Tirano+Italy/St+Moritz+Switzerland">📍 Ver rota</a></div></div>
+      <div class="event"><div class="event-time">Dia</div><div class="event-body"><div class="event-title">❄️ St. Moritz — neve garantida</div><a class="map-link" href="https://www.google.com/maps/search/St+Moritz+Switzerland">📍 Ver no mapa</a></div></div>
+      <div class="event"><div class="event-time">Tarde</div><div class="event-body"><div class="event-title">🍫 Chocolate suíço + fondue</div></div></div>
+      <div class="event"><div class="event-time">Noite</div><div class="event-body"><div class="event-title">🚆 Volta para Milão</div></div></div>
+    </div>
+  </details>
+
+  <details>
+    <summary>
+      <span class="day-badge badge milan">Dia 15</span>
+      <div><div class="summary-title">Milão livre 🛍️</div><div class="summary-sub">Sáb 15/03 · Navigli · Brera</div></div>
+      <span class="chevron">›</span>
+    </summary>
+    <div class="day-content">
+      <div class="event"><div class="event-time">Almoço</div><div class="event-body"><div class="event-title">🍽️ Navigli — canal de Milão</div><a class="map-link" href="https://www.google.com/maps/search/Navigli+Milan">📍 Ver no mapa</a></div></div>
+      <div class="event"><div class="event-time">Tarde</div><div class="event-body"><div class="event-title">🛍️ Curso Buenos Aires</div><div class="event-detail">Maior rua de compras de Milão</div><a class="map-link" href="https://www.google.com/maps/search/Corso+Buenos+Aires+Milan">📍 Ver no mapa</a></div></div>
+      <div class="event"><div class="event-time">Noite</div><div class="event-body"><div class="event-title">🥂 Aperitivo em Brera</div><div class="event-detail">Último Aperol Spritz italiano</div><a class="map-link" href="https://www.google.com/maps/search/aperitivo+Brera+Milan">📍 Ver no mapa</a></div></div>
+    </div>
+  </details>
+
+  <details>
+    <summary>
+      <span class="day-badge badge transit">Dia 16</span>
+      <div><div class="summary-title">Volta para casa 🏡</div><div class="summary-sub">Dom 16/03 · MXP → GRU → CNF</div></div>
+      <span class="chevron">›</span>
+    </summary>
+    <div class="day-content">
+      <div class="event"><div class="event-time">Manhã</div><div class="event-body"><div class="event-title">🧳 Checkout Milão 2</div><div class="event-detail">Cozy Studio Nolo · Cód: HMNFY3RKZR</div></div></div>
+      <div class="event"><div class="event-time">Manhã</div><div class="event-body"><div class="event-title">🚆 Transfer Nolo → Malpensa</div><a class="map-link" href="https://www.google.com/maps/dir/Nolo+Milan/Milan+Malpensa+Airport">📍 Ver trajeto</a></div></div>
+      <div class="event"><div class="event-time">12:00</div><div class="event-body"><div class="event-title">✈️ LA8073: MXP → GRU</div><div class="event-detail">Cód: UMWVRD</div></div></div>
+      <div class="event"><div class="event-time">Noite</div><div class="event-body"><div class="event-title">✈️ LA4544: GRU → CNF</div><div class="event-detail">Chegada em Confins · Cód: UMWVRD</div></div></div>
+    </div>
+  </details>
+
+</div>
+
+<!-- ===================== CÓDIGOS ===================== -->
+<div id="refs" class="section quick-ref">
+
+  <div class="card">
+    <div class="card-header">✈️ Voos</div>
+    <div class="ref-row"><span class="ref-label">LATAM (todos os voos)</span><span class="ref-code">UMWVRD</span></div>
+    <div class="ref-row"><span class="ref-label">LATAM Localizador</span><span class="ref-code">LA9577689BDIC</span></div>
+    <div class="ref-row"><span class="ref-label">Transavia FCO→ORY</span><span class="ref-code">QE75XJ</span></div>
+    <div class="ref-row"><span class="ref-label">easyJet ORY→MXP</span><span class="ref-code">KBXFSXT</span></div>
+    <div class="ref-row"><span class="ref-label">easyJet Voo</span><span class="ref-code">EJU3830</span></div>
+    <div class="ref-row"><span class="ref-label">easyJet Assento</span><span class="ref-code">6F · 2×23kg</span></div>
+  </div>
+
+  <div class="card">
+    <div class="card-header">🏠 Hospedagem</div>
+    <div class="ref-row"><span class="ref-label">Milão 1 (Vikey)</span><span class="ref-code">PHEB7ABY</span></div>
+    <div class="ref-row"><span class="ref-label">Milão 2</span><span class="ref-code">HMNFY3RKZR</span></div>
+    <div class="ref-row"><span class="ref-label">Disneyland</span><span class="ref-code">32991570</span></div>
+  </div>
+
+  <div class="card">
+    <div class="card-header">🛂 Passageiros</div>
+    <div class="ref-row"><span class="ref-label">Leandro Lemos</span><span class="ref-code">GF497058</span></div>
+    <div class="ref-row"><span class="ref-label">Gabriela Gomide</span><span class="ref-code">GG827112</span></div>
+  </div>
+
+  <div class="card">
+    <div class="card-header">✈️ Tabela de Voos</div>
+    <div class="flight-row"><span class="flight-date">01/03</span><div class="flight-info"><div class="flight-route">CNF → CGH → GRU</div><div class="flight-time">11:05 LA3039 · 18:00 LA8072</div><div class="flight-code">UMWVRD</div></div></div>
+    <div class="flight-row"><span class="flight-date">02/03</span><div class="flight-info"><div class="flight-route">→ MXP Malpensa</div><div class="flight-time">Chega 09:15</div></div></div>
+    <div class="flight-row"><span class="flight-date">09/03</span><div class="flight-info"><div class="flight-route">FCO → Paris Orly</div><div class="flight-time">12:10 → 14:25 · Transavia</div><div class="flight-code">QE75XJ · €162</div></div></div>
+    <div class="flight-row"><span class="flight-date">13/03</span><div class="flight-info"><div class="flight-route">Orly → MXP Malpensa</div><div class="flight-time">13:15 → 14:40 · easyJet</div><div class="flight-code">KBXFSXT · €165</div></div></div>
+    <div class="flight-row"><span class="flight-date">16/03</span><div class="flight-info"><div class="flight-route">MXP → GRU → CNF</div><div class="flight-time">12:00 LA8073 · noite LA4544</div><div class="flight-code">UMWVRD</div></div></div>
+  </div>
+
+</div>
+
+<!-- ===================== HOSPEDAGEM ===================== -->
+<div id="stays" class="section stays">
+
+  <div class="stay-card">
+    <div class="stay-header">
+      <div class="stay-icon" style="background:rgba(59,130,246,.15)">🏠</div>
+      <div><div class="stay-name">Smart Central Loft</div><div class="stay-dates">02 – 04 Mar · Milão 1</div></div>
+    </div>
+    <div class="stay-row"><span class="stay-label">Endereço</span><span class="stay-value">Via Copernico 49, Milão</span></div>
+    <div class="stay-row"><span class="stay-label">Anfitrião</span><span class="stay-value">Claudio</span></div>
+    <div class="stay-row"><span class="stay-label">Check-in</span><span class="stay-value">A partir das <span class="highlight">14:00</span> (quarto pronto às 16:00)</span></div>
+    <div class="stay-row"><span class="stay-label">Checkout</span><span class="stay-value">Antes das <span class="highlight">10:00</span></span></div>
+    <div class="stay-row"><span class="stay-label">Acesso</span><span class="stay-value">Armário de chaves automático</span></div>
+    <div class="stay-row"><span class="stay-label">Vikey</span><span class="stay-value"><span class="highlight">PHEB7ABY</span> · guest.vikey.it/checkin/PHEB7ABY</span></div>
+    <div class="stay-row"><span class="stay-label">Silêncio</span><span class="stay-value">22h – 8h</span></div>
+    <div class="stay-row"><span class="stay-label">Valor</span><span class="stay-value">R$1.067,66</span></div>
+  </div>
+
+  <div class="stay-card">
+    <div class="stay-header">
+      <div class="stay-icon" style="background:rgba(249,115,22,.15)">🏠</div>
+      <div><div class="stay-name">San Frediano Boutique Nº9</div><div class="stay-dates">04 – 06 Mar · Florença</div></div>
+    </div>
+    <div class="stay-row"><span class="stay-label">Bairro</span><span class="stay-value">San Frediano, Florença</span></div>
+    <div class="stay-row"><span class="stay-label">Checkout</span><span class="stay-value">Antes das <span class="highlight">10:00</span></span></div>
+    <div class="stay-row"><span class="stay-label">Valor</span><span class="stay-value">R$816,44 · 2 noites</span></div>
+  </div>
+
+  <div class="stay-card">
+    <div class="stay-header">
+      <div class="stay-icon" style="background:rgba(239,68,68,.15)">🏠</div>
+      <div><div class="stay-name">Camera c/ bagno e giardino</div><div class="stay-dates">06 – 09 Mar · Roma</div></div>
+    </div>
+    <div class="stay-row"><span class="stay-label">Checkout</span><span class="stay-value">Antes das <span class="highlight">10:00</span> (voo 12:10)</span></div>
+    <div class="stay-row"><span class="stay-label">Valor</span><span class="stay-value">R$1.356,09 · 3 noites</span></div>
+  </div>
+
+  <div class="stay-card">
+    <div class="stay-header">
+      <div class="stay-icon" style="background:rgba(236,72,153,.15)">🏠</div>
+      <div><div class="stay-name">Casa da Ana Luiza</div><div class="stay-dates">09 – 13 Mar · Paris</div></div>
+    </div>
+    <div class="stay-row"><span class="stay-label">Contato</span><span class="stay-value">Mãe do Lorenzo (amigo do Leco, mora em Lille)</span></div>
+    <div class="stay-row"><span class="stay-label">Checkout</span><span class="stay-value">Antes das 13h (voo 13:15 dia 13/03)</span></div>
+  </div>
+
+  <div class="stay-card">
+    <div class="stay-header">
+      <div class="stay-icon" style="background:rgba(59,130,246,.15)">🏠</div>
+      <div><div class="stay-name">Cozy Studio in Nolo</div><div class="stay-dates">13 – 16 Mar · Milão 2</div></div>
+    </div>
+    <div class="stay-row"><span class="stay-label">Bairro</span><span class="stay-value">Nolo, Milão</span></div>
+    <div class="stay-row"><span class="stay-label">Código</span><span class="stay-value"><span class="highlight">HMNFY3RKZR</span></span></div>
+    <div class="stay-row"><span class="stay-label">Checkout</span><span class="stay-value">Antes das <span class="highlight">10:00</span> (voo 12:00)</span></div>
+    <div class="stay-row"><span class="stay-label">Valor</span><span class="stay-value">R$1.760,96 · 3 noites</span></div>
+  </div>
+
+</div>
+
+<!-- ===================== CHECKLIST ===================== -->
+<div id="checklist" class="section checklist">
+
+  <div class="check-section">
+    <div class="check-title">Pré-viagem — Urgente</div>
+    <div class="check-item" onclick="toggleCheck(this)"><div class="check-box">✓</div><span class="check-text">Check-in online Vikey — PHEB7ABY (obrigatório por lei)</span></div>
+    <div class="check-item" onclick="toggleCheck(this)"><div class="check-box">✓</div><span class="check-text">Reservar ingressos Coliseu + Vaticano (esgota!)</span></div>
+    <div class="check-item" onclick="toggleCheck(this)"><div class="check-box">✓</div><span class="check-text">Reservar ingressos Uffizi, Florença (esgota!)</span></div>
+    <div class="check-item" onclick="toggleCheck(this)"><div class="check-box">✓</div><span class="check-text">Comprar passagem Bernina Express (Tirano→St. Moritz)</span></div>
+  </div>
+
+  <div class="check-section">
+    <div class="check-title">Pré-viagem — Geral</div>
+    <div class="check-item" onclick="toggleCheck(this)"><div class="check-box">✓</div><span class="check-text">Comprar ônibus Terravision Malpensa → Centrale (terravision.eu · ~€5–8/pessoa)</span></div>
+    <div class="check-item" onclick="toggleCheck(this)"><div class="check-box">✓</div><span class="check-text">Mensagem ao Claudio (host Milão 1): perguntar se pode deixar malas às 11–12h antes do check-in</span></div>
+    <div class="check-item" onclick="toggleCheck(this)"><div class="check-box">✓</div><span class="check-text">Check-in LATAM online (disponível 28/02)</span></div>
+    <div class="check-item" onclick="toggleCheck(this)"><div class="check-box">✓</div><span class="check-text">Comprar trens Milão→Florença e Florença→Roma</span></div>
+    <div class="check-item" onclick="toggleCheck(this)"><div class="check-box">✓</div><span class="check-text">Separar euros em espécie</span></div>
+    <div class="check-item" onclick="toggleCheck(this)"><div class="check-box">✓</div><span class="check-text">Confirmar seguro viagem ativo</span></div>
+    <div class="check-item" onclick="toggleCheck(this)"><div class="check-box">✓</div><span class="check-text">Baixar mapas offline das 5 cidades (Google Maps)</span></div>
+    <div class="check-item" onclick="toggleCheck(this)"><div class="check-box">✓</div><span class="check-text">Adaptador elétrico (EU Type C)</span></div>
+    <div class="check-item" onclick="toggleCheck(this)"><div class="check-box">✓</div><span class="check-text">Checar franquia easyJet (2×23kg ✅)</span></div>
+  </div>
+
+  <div class="check-section">
+    <div class="check-title">Durante a viagem</div>
+    <div class="check-item" onclick="toggleCheck(this)"><div class="check-box">✓</div><span class="check-text">Checkout Milão 1 antes das 10h (04/03)</span></div>
+    <div class="check-item" onclick="toggleCheck(this)"><div class="check-box">✓</div><span class="check-text">Checkout Florença antes das 10h (06/03)</span></div>
+    <div class="check-item" onclick="toggleCheck(this)"><div class="check-box">✓</div><span class="check-text">Checkout Roma + ir pro FCO (09/03 · voo 12:10)</span></div>
+    <div class="check-item" onclick="toggleCheck(this)"><div class="check-box">✓</div><span class="check-text">Checkout Paris + ir pro ORY (13/03 · voo 13:15)</span></div>
+    <div class="check-item" onclick="toggleCheck(this)"><div class="check-box">✓</div><span class="check-text">Checkout Milão 2 + transfer MXP (16/03 · voo 12:00)</span></div>
+  </div>
+
+</div>
+
+<script>
+  function showTab(id) {
+    document.querySelectorAll('.section').forEach(s => s.classList.remove('active'));
+    document.querySelectorAll('.tab').forEach(t => t.classList.remove('active'));
+    document.getElementById(id).classList.add('active');
+    event.currentTarget.classList.add('active');
+  }
+
+  function toggleCheck(el) {
+    el.classList.toggle('done');
+    saveChecks();
+  }
+
+  function saveChecks() {
+    const items = document.querySelectorAll('.check-item');
+    const state = Array.from(items).map(i => i.classList.contains('done'));
+    localStorage.setItem('trip2026_checks', JSON.stringify(state));
+  }
+
+  function loadChecks() {
+    const saved = localStorage.getItem('trip2026_checks');
+    if (!saved) return;
+    const state = JSON.parse(saved);
+    const items = document.querySelectorAll('.check-item');
+    items.forEach((item, i) => {
+      if (state[i]) item.classList.add('done');
+    });
+  }
+
+  loadChecks();
+</script>
+</body>
+</html>
