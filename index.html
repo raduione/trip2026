@@ -384,6 +384,23 @@
   .dot-a { background: #A855F7; }
   .dot-s { background: #EC4899; }
   .dot-h { background: #60A5FA; }
+
+  /* DAY ROUTE BUTTON */
+  .day-route {
+    padding: 10px 16px 6px;
+  }
+  .day-route-btn {
+    display: flex; align-items: center; justify-content: center; gap: 7px;
+    padding: 10px 14px;
+    background: linear-gradient(135deg, rgba(34,197,94,.12), rgba(16,185,129,.08));
+    border: 1px solid rgba(34,197,94,.3);
+    border-radius: 10px;
+    font-size: 13px; font-weight: 600;
+    color: #4ADE80;
+    text-decoration: none;
+    -webkit-tap-highlight-color: transparent;
+  }
+  .day-route-btn:active { opacity: 0.75; }
 </style>
 </head>
 <body>
@@ -433,7 +450,7 @@
     </div>
   </details>
 
-  <details>
+  <details data-route="https://www.google.com/maps/dir/Milan+Malpensa+Airport/Milano+Centrale+Station/Via+Copernico+49+Milan/Piazza+del+Duomo+Milan/Corso+Vittorio+Emanuele+II+Milan/Uniqlo+Via+Torino+Milan/Pam+Supermercato+Via+Medici+10+Milan">
     <summary>
       <span class="day-badge badge milan">Dia 2</span>
       <div><div class="summary-title">Chegada em Milão 🇮🇹</div><div class="summary-sub">Dom 02/03 · Smart Central Loft</div></div>
@@ -456,7 +473,7 @@
     </div>
   </details>
 
-  <details>
+  <details data-route="https://www.google.com/maps/dir/Milano+Centrale+Station/Varenna+Italy/Bellagio+Lake+Como+Italy/Menaggio+Italy/Milano+Centrale+Station">
     <summary>
       <span class="day-badge badge milan">Dia 3</span>
       <div><div class="summary-title">Day Trip Lake Como 🏔️</div><div class="summary-sub">Seg 03/03 · Varenna & Bellagio</div></div>
@@ -471,7 +488,7 @@
     </div>
   </details>
 
-  <details>
+  <details data-route="https://www.google.com/maps/dir/Firenze+Santa+Maria+Novella+Station/San+Frediano+Florence/Ponte+Vecchio+Florence/Oltrarno+Florence">
     <summary>
       <span class="day-badge badge florence">Dia 4</span>
       <div><div class="summary-title">Milão → Florença 🇮🇹</div><div class="summary-sub">Ter 04/03 · San Frediano</div></div>
@@ -486,7 +503,7 @@
     </div>
   </details>
 
-  <details>
+  <details data-route="https://www.google.com/maps/dir/Uffizi+Gallery+Florence/Piazzale+Michelangelo+Florence/Trattoria+Mario+Florence">
     <summary>
       <span class="day-badge badge florence">Dia 5</span>
       <div><div class="summary-title">Florença 🖼️</div><div class="summary-sub">Qua 05/03 · Uffizi & Michelangelo</div></div>
@@ -500,7 +517,7 @@
     </div>
   </details>
 
-  <details>
+  <details data-route="https://www.google.com/maps/dir/Firenze+Santa+Maria+Novella+Station/Roma+Termini+Station/Trastevere+Rome">
     <summary>
       <span class="day-badge badge rome">Dia 6</span>
       <div><div class="summary-title">Florença → Roma 🇮🇹</div><div class="summary-sub">Qui 06/03 · Trastevere</div></div>
@@ -514,7 +531,7 @@
     </div>
   </details>
 
-  <details>
+  <details data-route="https://www.google.com/maps/dir/Colosseum+Rome/Roman+Forum+Rome/Vatican+City/Trevi+Fountain+Rome">
     <summary>
       <span class="day-badge badge rome">Dia 7</span>
       <div><div class="summary-title">Roma — Clássicos 🏛️</div><div class="summary-sub">Sex 07/03 · Coliseu · Vaticano · Trevi</div></div>
@@ -528,7 +545,7 @@
     </div>
   </details>
 
-  <details>
+  <details data-route="https://www.google.com/maps/dir/Pantheon+Rome/Piazza+Navona+Rome/Trastevere+Rome">
     <summary>
       <span class="day-badge badge rome">Dia 8</span>
       <div><div class="summary-title">Roma · 💃 Dia da Mulher 🌹</div><div class="summary-sub">Sáb 08/03 · Pantheon · Navona</div></div>
@@ -542,7 +559,7 @@
     </div>
   </details>
 
-  <details>
+  <details data-route="https://www.google.com/maps/dir/Paris+Orly+Airport/Denfert-Rochereau+Paris/Eiffel+Tower+Paris">
     <summary>
       <span class="day-badge badge transit">Dia 9</span>
       <div><div class="summary-title">Roma → Paris 🇫🇷</div><div class="summary-sub">Dom 09/03 · Transavia QE75XJ</div></div>
@@ -557,7 +574,7 @@
     </div>
   </details>
 
-  <details>
+  <details data-route="https://www.google.com/maps/dir/Palais+Garnier+Paris/Notre+Dame+de+Paris/Sainte-Chapelle+Paris/Pont+de+l'Alma+Paris">
     <summary>
       <span class="day-badge badge paris">Dia 10</span>
       <div><div class="summary-title">Paris — Notre Dame & Sena 🛶</div><div class="summary-sub">Seg 10/03 · Opera · Sainte-Chapelle</div></div>
@@ -571,7 +588,7 @@
     </div>
   </details>
 
-  <details>
+  <details data-route="https://www.google.com/maps/dir/Paris+France/Disneyland+Paris">
     <summary>
       <span class="day-badge badge paris">Dia 11</span>
       <div><div class="summary-title">Disneyland Paris 🎢</div><div class="summary-sub">Ter 11/03 · Dia inteiro</div></div>
@@ -582,7 +599,7 @@
     </div>
   </details>
 
-  <details>
+  <details data-route="https://www.google.com/maps/dir/Pantheon+Paris+France/Parc+Monceau+Paris/Rue+de+l'Abreuvoir+Paris/Le+Marais+Paris">
     <summary>
       <span class="day-badge badge paris">Dia 12</span>
       <div><div class="summary-title">Paris — Panthéon & Marais 🛍️</div><div class="summary-sub">Qua 12/03</div></div>
@@ -596,7 +613,7 @@
     </div>
   </details>
 
-  <details>
+  <details data-route="https://www.google.com/maps/dir/Milan+Malpensa+Airport/Milano+Centrale+Station/Nolo+Milan">
     <summary>
       <span class="day-badge badge transit">Dia 13</span>
       <div><div class="summary-title">Paris → Milão 2 🇮🇹</div><div class="summary-sub">Qui 13/03 · easyJet · Bairro Nolo</div></div>
@@ -610,7 +627,7 @@
     </div>
   </details>
 
-  <details>
+  <details data-route="https://www.google.com/maps/dir/Milano+Centrale+Station/Tirano+Italy/Saint+Moritz+Switzerland">
     <summary>
       <span class="day-badge badge milan">Dia 14</span>
       <div><div class="summary-title">Day Trip St. Moritz ❄️</div><div class="summary-sub">Sex 14/03 · Bernina Express · Suíça</div></div>
@@ -624,7 +641,7 @@
     </div>
   </details>
 
-  <details>
+  <details data-route="https://www.google.com/maps/dir/Navigli+Milan/Corso+Buenos+Aires+Milan/Brera+Milan">
     <summary>
       <span class="day-badge badge milan">Dia 15</span>
       <div><div class="summary-title">Milão livre 🛍️</div><div class="summary-sub">Sáb 15/03 · Navigli · Brera</div></div>
@@ -637,7 +654,7 @@
     </div>
   </details>
 
-  <details>
+  <details data-route="https://www.google.com/maps/dir/Nolo+Milan/Milan+Malpensa+Airport">
     <summary>
       <span class="day-badge badge transit">Dia 16</span>
       <div><div class="summary-title">Volta para casa 🏡</div><div class="summary-sub">Dom 16/03 · MXP → GRU → CNF</div></div>
@@ -1019,6 +1036,16 @@
   }
 
   loadChecks();
+
+  // Inject day route buttons from data-route attributes
+  document.querySelectorAll('details[data-route]').forEach(d => {
+    const content = d.querySelector('.day-content');
+    if (!content) return;
+    const div = document.createElement('div');
+    div.className = 'day-route';
+    div.innerHTML = `<a class="day-route-btn" href="${d.dataset.route}" target="_blank">🗺️ Ver trajeto completo do dia no Maps</a>`;
+    content.insertBefore(div, content.firstChild);
+  });
 
   // Auto-categorize itinerary events by emoji
   (function() {
