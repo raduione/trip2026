@@ -4,873 +4,815 @@
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
 <meta name="apple-mobile-web-app-capable" content="yes">
-<meta name="apple-mobile-web-app-status-bar-style" content="black-translucent">
+<meta name="apple-mobile-web-app-status-bar-style" content="default">
 <title>Europa 2026 ✈️</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link href="https://fonts.googleapis.com/css2?family=Playfair+Display:ital,wght@0,700;0,900;1,700&family=DM+Sans:wght@300;400;500;600&display=swap" rel="stylesheet">
 <style>
+/* ── TOKENS ── */
 :root {
-  --bg:       #0F172A;
-  --bg2:      #1A2540;
-  --surface:  #1E2D45;
-  --surface2: #243352;
-  --border:   #2D3F5E;
-  --text:     #EEE9E0;
-  --muted:    #8899BB;
-  --milan:    #3B82F6;
-  --florence: #F97316;
-  --rome:     #EF4444;
-  --paris:    #EC4899;
-  --transit:  #6B7280;
-  --green:    #22C55E;
-  --r:        14px;
+  --paper:   #FAF7F2;
+  --paper2:  #F3EEE6;
+  --white:   #FFFFFF;
+  --ink:     #1C150A;
+  --sepia:   #7A6448;
+  --line:    #DDD5C5;
+  --shadow:  rgba(60,35,10,.10);
+
+  --milan:   #1D6DB5;
+  --florence:#C45B0A;
+  --rome:    #B91C1C;
+  --paris:   #9D174D;
+  --transit: #5C6470;
+
+  --green:   #16A34A;
+  --r: 10px;
+  --font-display: 'Playfair Display', Georgia, 'Times New Roman', serif;
+  --font-body:    'DM Sans', -apple-system, BlinkMacSystemFont, sans-serif;
 }
+/* ── RESET ── */
 *{box-sizing:border-box;margin:0;padding:0;-webkit-tap-highlight-color:transparent}
 html,body{height:100%;overflow:hidden}
 body{
-  font-family:-apple-system,BlinkMacSystemFont,'SF Pro Text','Segoe UI',sans-serif;
-  background:var(--bg);color:var(--text);font-size:15px;line-height:1.5;
+  font-family:var(--font-body);
+  background:var(--paper);
+  color:var(--ink);
+  font-size:15px;
+  line-height:1.5;
+}
+/* noise texture overlay */
+body::before{
+  content:'';position:fixed;inset:0;pointer-events:none;z-index:0;
+  background-image:url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='200' height='200'%3E%3Cfilter id='n'%3E%3CfeTurbulence type='fractalNoise' baseFrequency='0.9' numOctaves='4' stitchTiles='stitch'/%3E%3C/filter%3E%3Crect width='200' height='200' filter='url(%23n)' opacity='0.025'/%3E%3C/svg%3E");
+  opacity:1;
 }
 
-/* ── LAYOUT ── */
-#app{display:flex;flex-direction:column;height:100vh;height:100dvh}
-#header{flex-shrink:0}
+/* ── APP SHELL ── */
+#app{display:flex;flex-direction:column;height:100vh;height:100dvh;position:relative;z-index:1}
+#hdr{flex-shrink:0}
 #panels{flex:1;overflow:hidden;position:relative}
-.panel{position:absolute;inset:0;overflow-y:auto;-webkit-overflow-scrolling:touch;display:none;padding-bottom:80px}
+.panel{position:absolute;inset:0;overflow-y:auto;-webkit-overflow-scrolling:touch;display:none;padding-bottom:76px}
 .panel.active{display:block}
-#nav{flex-shrink:0;position:relative;z-index:100}
+#nav{flex-shrink:0}
 
 /* ── HEADER ── */
-#header{
-  background:linear-gradient(135deg,#0D1B35 0%,#122040 60%,#0F172A 100%);
-  padding:env(safe-area-inset-top,0) 0 0;
-  border-bottom:1px solid var(--border);
+#hdr{
+  background:var(--white);
+  border-bottom:1px solid var(--line);
+  padding-top:env(safe-area-inset-top,0);
 }
-.hdr-inner{padding:14px 16px 12px;display:flex;align-items:center;justify-content:space-between}
-.hdr-title{font-size:19px;font-weight:700;letter-spacing:-.3px}
-.hdr-sub{font-size:12px;color:var(--muted);margin-top:1px}
-.trip-status{
-  text-align:right;padding:4px 10px 4px 14px;
-  background:rgba(255,255,255,.06);border-radius:20px;
-  font-size:11px;font-weight:600;white-space:nowrap;
-  border:1px solid rgba(255,255,255,.1)
+.hdr-top{
+  display:flex;justify-content:space-between;align-items:flex-start;
+  padding:14px 18px 10px;
 }
-.trip-status.before{color:#93C5FD}
-.trip-status.during{color:#4ADE80}
-.trip-status.after{color:var(--muted)}
+.trip-name{
+  font-family:var(--font-display);
+  font-size:22px;font-weight:900;
+  color:var(--ink);letter-spacing:-.3px;line-height:1.1;
+}
+.trip-sub{font-size:12px;color:var(--sepia);margin-top:3px;font-weight:400}
+.status-pill{
+  font-size:11px;font-weight:600;
+  padding:5px 12px;border-radius:20px;
+  white-space:nowrap;margin-top:2px;
+}
+.status-pill.before{background:#EFF6FF;color:#1D4ED8;border:1px solid #BFDBFE}
+.status-pill.during{background:#F0FDF4;color:#15803D;border:1px solid #BBF7D0}
+.status-pill.after {background:var(--paper2);color:var(--sepia);border:1px solid var(--line)}
+
+/* city chips */
+.city-row{
+  display:flex;gap:6px;padding:6px 18px 12px;
+  overflow-x:auto;scrollbar-width:none;
+}
+.city-row::-webkit-scrollbar{display:none}
+.city-chip{
+  font-family:var(--font-body);
+  font-size:10px;font-weight:600;letter-spacing:.4px;text-transform:uppercase;
+  padding:3px 10px;border-radius:20px;white-space:nowrap;
+  border:1.5px solid;
+}
+.chip-m{color:var(--milan);   border-color:var(--milan);   background:rgba(29,109,181,.07)}
+.chip-f{color:var(--florence);border-color:var(--florence);background:rgba(196,91,10,.07)}
+.chip-r{color:var(--rome);    border-color:var(--rome);    background:rgba(185,28,28,.07)}
+.chip-p{color:var(--paris);   border-color:var(--paris);   background:rgba(157,23,77,.07)}
+.chip-t{color:var(--transit); border-color:var(--transit); background:rgba(92,100,112,.07)}
 
 /* progress bar */
-.progress-wrap{height:3px;background:rgba(255,255,255,.08)}
-.progress-fill{height:100%;width:0%;transition:width .5s ease;background:linear-gradient(90deg,var(--milan),var(--florence),var(--rome),var(--paris))}
+.prog-wrap{height:3px;background:var(--paper2)}
+.prog-fill{height:100%;width:0;transition:width .6s ease;background:linear-gradient(90deg,var(--milan),var(--florence),var(--rome),var(--paris))}
 
-/* city strip */
-.city-strip{
-  display:flex;gap:6px;padding:8px 16px 10px;
-  overflow-x:auto;scrollbar-width:none
-}
-.city-strip::-webkit-scrollbar{display:none}
-.city-chip{
-  white-space:nowrap;padding:3px 10px;border-radius:20px;
-  font-size:11px;font-weight:600;cursor:default
-}
-.chip-m{background:rgba(59,130,246,.2);color:#93C5FD;border:1px solid rgba(59,130,246,.3)}
-.chip-f{background:rgba(249,115,22,.2);color:#FDBA74;border:1px solid rgba(249,115,22,.3)}
-.chip-r{background:rgba(239,68,68,.2);color:#FCA5A5;border:1px solid rgba(239,68,68,.3)}
-.chip-p{background:rgba(236,72,153,.2);color:#F9A8D4;border:1px solid rgba(236,72,153,.3)}
-.chip-t{background:rgba(107,114,128,.2);color:#D1D5DB;border:1px solid rgba(107,114,128,.3)}
-
-/* ── BOTTOM NAV ── */
+/* ── NAV ── */
 #nav{
-  background:var(--surface);
-  border-top:1px solid var(--border);
+  background:var(--white);
+  border-top:1px solid var(--line);
   display:flex;
   padding-bottom:env(safe-area-inset-bottom,0);
 }
 .nav-btn{
   flex:1;display:flex;flex-direction:column;align-items:center;
-  padding:9px 4px 8px;cursor:pointer;gap:3px;
-  font-size:10px;font-weight:600;color:var(--muted);
-  transition:color .15s;border:none;background:none;
+  padding:9px 4px 7px;gap:2px;cursor:pointer;
+  font-family:var(--font-body);font-size:10px;font-weight:500;
+  color:var(--sepia);border:none;background:none;
+  transition:color .15s;
 }
-.nav-btn .nav-icon{font-size:19px;transition:transform .15s}
-.nav-btn.active{color:#60A5FA}
-.nav-btn.active .nav-icon{transform:scale(1.15)}
+.nav-btn .ni{font-size:20px;transition:transform .2s}
+.nav-btn.active{color:var(--milan)}
+.nav-btn.active .ni{transform:scale(1.18)}
 
-/* ── TIMELINE ── */
-#timeline{padding:16px 16px 0}
-.tl-section-label{
-  font-size:10px;font-weight:700;letter-spacing:1px;text-transform:uppercase;
-  color:var(--muted);padding:8px 0 4px 56px;
-}
+/* ── TIMELINE PANEL ── */
+#panel-timeline{padding:16px 16px 0}
 
-.day{
-  display:flex;gap:0;margin-bottom:4px;position:relative;
+/* connecting dashes between cards */
+.tl-dash{
+  width:2px;height:20px;
+  border-left:2px dashed var(--line);
+  margin:0 auto;position:relative;left:-50%;
 }
-/* vertical line */
-.day-line{
-  width:44px;flex-shrink:0;display:flex;flex-direction:column;align-items:center;
-}
-.day-line-top{width:2px;min-height:14px;flex:0 0 14px}
-.day-line-bot{width:2px;flex:1;min-height:8px}
-.day-dot{
-  width:36px;height:36px;border-radius:50%;
-  display:flex;align-items:center;justify-content:center;
-  font-size:13px;font-weight:700;flex-shrink:0;
-  position:relative;z-index:2;transition:transform .2s
-}
-.day-dot.past{opacity:.6}
-.day-dot.today{
-  box-shadow:0 0 0 0 currentColor;
-  animation:pulse 2.5s ease-in-out infinite;
-}
-@keyframes pulse{
-  0%{box-shadow:0 0 0 0 rgba(96,165,250,.6)}
-  60%{box-shadow:0 0 0 8px rgba(96,165,250,0)}
-  100%{box-shadow:0 0 0 0 rgba(96,165,250,0)}
-}
-.day-dot.past::after{
-  content:'✓';position:absolute;inset:0;
-  display:flex;align-items:center;justify-content:center;
-  font-size:14px;background:inherit;border-radius:50%;
-}
+.tl-dash.city-m{border-color:rgba(29,109,181,.3)}
+.tl-dash.city-f{border-color:rgba(196,91,10,.3)}
+.tl-dash.city-r{border-color:rgba(185,28,28,.3)}
+.tl-dash.city-p{border-color:rgba(157,23,77,.3)}
+.tl-dash.city-t{border-color:rgba(92,100,112,.3)}
 
 /* day card */
-.day-card{flex:1;min-width:0;cursor:pointer}
-.day-header{
-  background:var(--surface);border:1px solid var(--border);
-  border-radius:var(--r);padding:10px 12px;
-  display:flex;align-items:center;gap:10px;
-  transition:background .15s;
+.day{margin-bottom:0}
+.day-card{
+  background:var(--white);
+  border-radius:var(--r);
+  border:1px solid var(--line);
+  border-left:4px solid var(--city-clr,var(--transit));
+  box-shadow:0 2px 10px var(--shadow);
+  overflow:hidden;
+  cursor:pointer;
   -webkit-user-select:none;user-select:none;
 }
-.day-card.open .day-header{
-  border-bottom-left-radius:0;border-bottom-right-radius:0;
-  border-bottom-color:transparent;background:var(--surface2);
+.day-card.city-m{--city-clr:var(--milan)}
+.day-card.city-f{--city-clr:var(--florence)}
+.day-card.city-r{--city-clr:var(--rome)}
+.day-card.city-p{--city-clr:var(--paris)}
+.day-card.city-t{--city-clr:var(--transit)}
+
+/* today highlight */
+.day-card.today-card{
+  background:#FEFDF8;
+  border-left-width:5px;
+  box-shadow:0 4px 20px rgba(0,0,0,.12);
 }
-.day-header:active{background:var(--surface2)}
-.day-header-left{flex:1;min-width:0}
-.day-title-row{display:flex;align-items:baseline;gap:6px;flex-wrap:wrap}
-.day-title{font-size:14px;font-weight:600;line-height:1.3}
-.day-date{font-size:11px;color:var(--muted);white-space:nowrap}
-.day-city-tag{
-  font-size:10px;font-weight:700;padding:1px 7px;
-  border-radius:10px;white-space:nowrap;margin-top:3px;display:inline-block
+
+/* day header */
+.day-hdr{
+  display:flex;align-items:center;gap:12px;
+  padding:14px 14px 12px;
+  transition:background .15s;
 }
-.day-chevron{color:var(--muted);font-size:13px;transition:transform .2s;flex-shrink:0}
+.day-hdr:active,.day-card.open .day-hdr{background:var(--paper)}
+.day-num{
+  font-family:var(--font-display);
+  font-size:48px;font-weight:900;line-height:1;
+  color:var(--city-clr,var(--transit));
+  min-width:52px;text-align:center;
+  opacity:.85;flex-shrink:0;
+}
+.day-info{flex:1;min-width:0}
+.day-title{
+  font-family:var(--font-display);
+  font-size:16px;font-weight:700;
+  color:var(--ink);line-height:1.3;
+}
+.day-date{font-size:12px;color:var(--sepia);margin-top:2px}
+.day-stamp{
+  display:inline-flex;align-items:center;gap:4px;
+  font-family:var(--font-body);
+  font-size:10px;font-weight:600;letter-spacing:.4px;text-transform:uppercase;
+  padding:2px 9px;border-radius:20px;
+  border:1.5px dashed var(--city-clr,var(--transit));
+  color:var(--city-clr,var(--transit));
+  margin-top:5px;
+}
+.day-chevron{color:var(--sepia);font-size:14px;transition:transform .25s;flex-shrink:0;font-weight:300}
 .day-card.open .day-chevron{transform:rotate(90deg)}
+.day-card.past-card .day-num{opacity:.4}
+.day-card.past-card .day-hdr{opacity:.7}
 
 /* day body */
 .day-body{
-  background:var(--surface);border:1px solid var(--border);
-  border-top:none;border-bottom-left-radius:var(--r);border-bottom-right-radius:var(--r);
-  overflow:hidden;max-height:0;transition:max-height .35s ease;
+  overflow:hidden;max-height:0;
+  transition:max-height .4s cubic-bezier(.4,0,.2,1);
+  border-top:0px solid var(--line);
 }
-.day-card.open .day-body{max-height:2000px}
+.day-card.open .day-body{
+  max-height:2400px;
+  border-top:1px solid var(--line);
+}
 
 /* route btn */
 .route-btn{
   display:flex;align-items:center;justify-content:center;gap:6px;
-  margin:10px 12px 4px;padding:9px 14px;
-  background:rgba(34,197,94,.1);border:1px solid rgba(34,197,94,.25);
-  border-radius:10px;font-size:12px;font-weight:600;color:#4ADE80;
+  margin:12px 14px 6px;padding:10px 16px;
+  background:#F0FDF4;border:1.5px solid #86EFAC;
+  border-radius:8px;font-size:12px;font-weight:600;color:var(--green);
   text-decoration:none;
 }
 
-/* alert in day */
+/* day alert */
 .day-alert{
-  margin:8px 12px 0;padding:8px 10px;
-  background:rgba(234,179,8,.1);border:1px solid rgba(234,179,8,.25);
-  border-radius:8px;font-size:11px;color:#FDE047;
+  margin:10px 14px 0;padding:9px 12px;
+  background:#FFFBEB;border:1.5px solid #FCD34D;
+  border-radius:8px;font-size:11px;color:#92400E;font-weight:500;
 }
 
 /* ── EVENTS ── */
-.ev{border-bottom:1px solid rgba(255,255,255,.04)}
+.ev{
+  border-bottom:1px solid var(--paper2);
+}
 .ev:last-child{border-bottom:none}
 .ev-row{
-  display:flex;gap:10px;padding:9px 12px;
-  cursor:pointer;align-items:flex-start;
+  display:flex;align-items:flex-start;gap:10px;
+  padding:10px 14px;cursor:pointer;
   border-left:3px solid transparent;
   transition:background .1s;
 }
-.ev-row:active{background:rgba(255,255,255,.03)}
-.ev.transport .ev-row{border-left-color:#22C55E}
-.ev.food       .ev-row{border-left-color:#F97316}
-.ev.attraction .ev-row{border-left-color:#A855F7}
-.ev.shopping   .ev-row{border-left-color:#EC4899}
-.ev.stay       .ev-row{border-left-color:#60A5FA}
-.ev-time{font-size:10px;color:var(--muted);width:42px;flex-shrink:0;font-family:monospace;padding-top:2px}
-.ev-main{flex:1;min-width:0}
-.ev-name{font-size:13px;line-height:1.4}
-.ev-detail-wrap{
-  max-height:0;overflow:hidden;transition:max-height .25s ease;
-  padding:0 12px 0 55px;
+.ev-row:active{background:var(--paper)}
+.ev.transport .ev-row{border-left-color:#16A34A}
+.ev.food       .ev-row{border-left-color:#EA580C}
+.ev.attraction .ev-row{border-left-color:#7C3AED}
+.ev.shopping   .ev-row{border-left-color:#DB2777}
+.ev.stay       .ev-row{border-left-color:#2563EB}
+.ev-time{
+  font-family:'DM Sans',sans-serif;
+  font-size:10px;color:var(--sepia);
+  width:40px;flex-shrink:0;padding-top:2px;
+  font-weight:500;letter-spacing:.2px;
 }
-.ev.open .ev-detail-wrap{max-height:200px;padding-bottom:10px}
-.ev-info{font-size:12px;color:var(--muted);margin-top:4px;line-height:1.4}
-.ev-chevron{font-size:10px;color:var(--muted);flex-shrink:0;padding-top:3px;transition:transform .2s}
-.ev.open .ev-chevron{transform:rotate(90deg)}
+.ev-main{flex:1;min-width:0}
+.ev-name{font-size:13px;font-weight:500;line-height:1.4;color:var(--ink)}
+.ev-chev{color:var(--line);font-size:11px;padding-top:3px;transition:transform .2s;flex-shrink:0}
+.ev.open .ev-chev{transform:rotate(90deg);color:var(--sepia)}
+
+/* event detail expand */
+.ev-detail{
+  overflow:hidden;max-height:0;
+  transition:max-height .25s ease;
+  padding:0 14px 0 53px;
+}
+.ev.open .ev-detail{max-height:160px;padding-bottom:12px}
+.ev-info{font-size:12px;color:var(--sepia);line-height:1.5;margin-top:3px}
 .map-btn{
-  display:inline-flex;align-items:center;gap:4px;margin-top:6px;
-  font-size:11px;color:#60A5FA;text-decoration:none;
-  padding:4px 9px;background:rgba(96,165,250,.1);
-  border-radius:6px;border:1px solid rgba(96,165,250,.2)
+  display:inline-flex;align-items:center;gap:4px;margin-top:7px;
+  font-size:11px;color:var(--milan);text-decoration:none;font-weight:600;
+  padding:4px 10px;background:#EFF6FF;
+  border-radius:6px;border:1px solid #BFDBFE;
 }
 
 /* ── CODES ── */
-.codes-wrap{padding:16px}
-.code-section{margin-bottom:14px}
-.code-section-title{
-  font-size:11px;font-weight:700;text-transform:uppercase;letter-spacing:.8px;
-  color:var(--muted);padding:0 4px;margin-bottom:8px
+.codes-wrap,.stays-wrap,.cl-wrap,.food-wrap{padding:16px}
+.sec-title{
+  font-family:var(--font-display);
+  font-size:11px;font-weight:700;letter-spacing:1px;text-transform:uppercase;
+  color:var(--sepia);padding:0 2px;margin-bottom:9px;
 }
-.code-card{
-  background:var(--surface);border:1px solid var(--border);
-  border-radius:var(--r);overflow:hidden
+.code-card,.stay-card,.cl-group,.resto-card{
+  background:var(--white);border:1px solid var(--line);
+  border-radius:var(--r);margin-bottom:14px;overflow:hidden;
+  box-shadow:0 1px 6px var(--shadow);
 }
 .code-row{
   display:flex;justify-content:space-between;align-items:center;
-  padding:11px 14px;border-bottom:1px solid var(--border);gap:8px
+  padding:11px 14px;border-bottom:1px solid var(--paper2);gap:8px;
 }
 .code-row:last-child{border-bottom:none}
-.code-label{font-size:13px;color:var(--muted);flex:1}
+.code-lbl{font-size:13px;color:var(--sepia);flex:1}
 .code-val{
-  font-family:'SF Mono',monospace;font-size:12px;font-weight:600;
-  background:rgba(96,165,250,.12);color:#93C5FD;
-  padding:3px 8px;border-radius:6px;cursor:pointer;
-  border:1px solid rgba(96,165,250,.2);white-space:nowrap
+  font-family:'DM Mono','SF Mono','Courier New',monospace;
+  font-size:12px;font-weight:600;
+  background:#EFF6FF;color:var(--milan);
+  padding:3px 9px;border-radius:6px;
+  border:1px solid #BFDBFE;cursor:pointer;white-space:nowrap;
 }
-.code-val:active{background:rgba(96,165,250,.25)}
-.flight-row{
-  display:flex;gap:12px;padding:11px 14px;
-  border-bottom:1px solid var(--border);align-items:center
-}
-.flight-row:last-child{border-bottom:none}
-.fl-date{font-size:11px;color:var(--muted);width:36px;flex-shrink:0;font-weight:600}
-.fl-info{flex:1}
-.fl-route{font-size:14px;font-weight:600}
-.fl-time{font-size:11px;color:var(--muted);margin-top:1px}
-.fl-code{font-size:10px;color:#93C5FD;font-family:monospace;margin-top:1px}
+.code-val:active{background:#DBEAFE}
+.fl-row{display:flex;gap:12px;padding:11px 14px;border-bottom:1px solid var(--paper2);align-items:flex-start}
+.fl-row:last-child{border-bottom:none}
+.fl-date{font-size:11px;color:var(--sepia);width:36px;flex-shrink:0;font-weight:600;padding-top:2px}
+.fl-route{font-size:14px;font-weight:600;color:var(--ink)}
+.fl-time{font-size:11px;color:var(--sepia);margin-top:1px}
+.fl-code{font-size:10px;color:var(--milan);font-family:monospace;margin-top:2px;font-weight:600}
 
 /* ── STAYS ── */
-.stays-wrap{padding:16px}
-.stay-card{
-  background:var(--surface);border:1px solid var(--border);
-  border-radius:var(--r);margin-bottom:12px;overflow:hidden
-}
 .stay-hdr{
-  padding:13px 14px;display:flex;align-items:center;gap:10px;
-  border-bottom:1px solid var(--border)
+  display:flex;align-items:center;gap:12px;
+  padding:13px 14px;border-bottom:1px solid var(--paper2);
 }
-.stay-icon{
-  width:38px;height:38px;border-radius:10px;
-  display:flex;align-items:center;justify-content:center;
-  font-size:18px;flex-shrink:0
-}
-.stay-name{font-size:14px;font-weight:700}
-.stay-dates{font-size:11px;color:var(--muted)}
-.stay-row{
-  display:flex;gap:8px;padding:9px 14px;
-  border-bottom:1px solid rgba(255,255,255,.04);font-size:13px
-}
+.stay-icon{width:38px;height:38px;border-radius:9px;display:flex;align-items:center;justify-content:center;font-size:18px;flex-shrink:0}
+.stay-name{font-family:var(--font-display);font-size:15px;font-weight:700;color:var(--ink)}
+.stay-dates{font-size:11px;color:var(--sepia);margin-top:2px}
+.stay-row{display:flex;gap:8px;padding:9px 14px;border-bottom:1px solid var(--paper2);font-size:13px}
 .stay-row:last-child{border-bottom:none}
-.stay-lbl{color:var(--muted);width:72px;flex-shrink:0;font-size:12px}
-.stay-val{flex:1;line-height:1.4}
-.hl{color:#FDE047;font-weight:600}
+.s-lbl{color:var(--sepia);width:74px;flex-shrink:0;font-size:12px}
+.s-val{flex:1;color:var(--ink);line-height:1.4}
+.hl{color:var(--milan);font-weight:600}
 
 /* ── CHECKLIST ── */
-.cl-wrap{padding:16px}
-.cl-section{margin-bottom:16px}
-.cl-title{
-  font-size:11px;font-weight:700;text-transform:uppercase;letter-spacing:.8px;
-  color:var(--muted);padding:0 4px;margin-bottom:8px
+.cl-group{margin-bottom:14px}
+.cl-grp-title{
+  font-size:11px;font-weight:600;letter-spacing:.5px;text-transform:uppercase;
+  color:var(--sepia);padding:10px 14px;border-bottom:1px solid var(--paper2);
+  background:var(--paper);
 }
 .cl-item{
-  display:flex;align-items:flex-start;gap:12px;padding:11px 14px;
-  background:var(--surface);border:1px solid var(--border);
-  border-radius:10px;margin-bottom:6px;cursor:pointer;
-  transition:opacity .2s;-webkit-user-select:none;user-select:none
+  display:flex;align-items:flex-start;gap:12px;
+  padding:11px 14px;border-bottom:1px solid var(--paper2);
+  cursor:pointer;transition:opacity .2s;
+  -webkit-user-select:none;user-select:none;
 }
+.cl-item:last-child{border-bottom:none}
 .cl-item.done{opacity:.4}
 .cl-item.done .cl-text{text-decoration:line-through}
 .cl-box{
-  width:22px;height:22px;border:2px solid var(--border);
+  width:22px;height:22px;border:2px solid var(--line);
   border-radius:6px;flex-shrink:0;display:flex;align-items:center;
-  justify-content:center;font-size:12px;transition:all .15s;margin-top:1px
+  justify-content:center;font-size:13px;transition:all .15s;margin-top:1px;
+  background:var(--white);
 }
-.cl-item.done .cl-box{background:#22C55E;border-color:#22C55E}
-.cl-text{font-size:14px;flex:1;line-height:1.4}
+.cl-item.done .cl-box{background:var(--green);border-color:var(--green);color:#fff}
+.cl-text{font-size:14px;flex:1;line-height:1.4;color:var(--ink)}
 
 /* ── FOOD ── */
-.food-wrap{padding:12px 16px 4px}
 .food-city-hdr{
   display:flex;align-items:center;gap:8px;
+  font-family:var(--font-display);font-size:18px;font-weight:700;
   margin:20px 0 10px;padding-bottom:8px;
-  border-bottom:2px solid;font-size:15px;font-weight:700
+  border-bottom:2px solid;
 }
 .food-city-hdr:first-child{margin-top:4px}
-.food-city-hdr small{font-size:12px;font-weight:400;opacity:.7}
-.food-city-hdr.milan{color:#93C5FD;border-color:var(--milan)}
-.food-city-hdr.florence{color:#FDBA74;border-color:var(--florence)}
-.food-city-hdr.rome{color:#FCA5A5;border-color:var(--rome)}
-.food-city-hdr.paris{color:#F9A8D4;border-color:var(--paris)}
-.resto-card{
-  background:var(--surface);border:1px solid var(--border);
-  border-radius:var(--r);margin-bottom:10px;overflow:hidden
-}
-.resto-top{padding:12px 14px 10px;border-bottom:1px solid var(--border)}
-.resto-name{font-size:15px;font-weight:700}
-.resto-dish{font-size:12px;color:var(--muted);margin-top:2px}
+.food-city-hdr small{font-family:var(--font-body);font-size:11px;font-weight:400;opacity:.6}
+.food-city-hdr.milan   {color:var(--milan);   border-color:var(--milan)}
+.food-city-hdr.florence{color:var(--florence);border-color:var(--florence)}
+.food-city-hdr.rome    {color:var(--rome);    border-color:var(--rome)}
+.food-city-hdr.paris   {color:var(--paris);   border-color:var(--paris)}
+.resto-top{padding:12px 14px 10px;border-bottom:1px solid var(--paper2)}
+.resto-name{font-family:var(--font-display);font-size:16px;font-weight:700;color:var(--ink)}
+.resto-dish{font-size:12px;color:var(--sepia);margin-top:2px}
 .resto-tags{display:flex;gap:5px;flex-wrap:wrap;margin-top:8px}
-.rtag{font-size:10px;padding:2px 7px;border-radius:6px;font-weight:600}
-.rtag-day {background:rgba(99,102,241,.2);color:#A5B4FC;border:1px solid rgba(99,102,241,.3)}
-.rtag-must{background:rgba(234,179,8,.15);color:#FDE047;border:1px solid rgba(234,179,8,.3)}
-.rtag-res {background:rgba(239,68,68,.15);color:#FCA5A5;border:1px solid rgba(239,68,68,.3)}
-.rtag-free{background:rgba(34,197,94,.15);color:#86EFAC;border:1px solid rgba(34,197,94,.3)}
-.rtag-price{background:rgba(255,255,255,.07);color:var(--muted);border:1px solid var(--border)}
-.resto-body{padding:10px 14px}
-.resto-tip{font-size:13px;color:#CBD5E1;line-height:1.45;margin-bottom:8px}
-.resto-map{
-  display:inline-flex;align-items:center;gap:5px;font-size:12px;color:#60A5FA;
-  text-decoration:none;padding:5px 10px;background:rgba(96,165,250,.1);
-  border-radius:8px;border:1px solid rgba(96,165,250,.2)
-}
+.rtag{font-size:10px;padding:2px 8px;border-radius:6px;font-weight:600;border:1px solid}
+.rtag-day {color:#1D4ED8;background:#EFF6FF;border-color:#BFDBFE}
+.rtag-must{color:#92400E;background:#FFFBEB;border-color:#FCD34D}
+.rtag-res {color:#991B1B;background:#FEF2F2;border-color:#FECACA}
+.rtag-free{color:#14532D;background:#F0FDF4;border-color:#BBF7D0}
+.rtag-€   {color:var(--sepia);background:var(--paper);border-color:var(--line)}
+.resto-body{padding:11px 14px}
+.resto-tip{font-size:13px;color:var(--sepia);line-height:1.5;margin-bottom:8px}
+.resto-map{display:inline-flex;align-items:center;gap:4px;font-size:11px;color:var(--milan);font-weight:600;text-decoration:none;padding:4px 10px;background:#EFF6FF;border-radius:6px;border:1px solid #BFDBFE}
 
-/* copied toast */
+/* ── TOAST ── */
 .toast{
-  position:fixed;bottom:90px;left:50%;transform:translateX(-50%) translateY(20px);
-  background:#22C55E;color:#fff;padding:8px 18px;border-radius:20px;
+  position:fixed;bottom:86px;left:50%;transform:translateX(-50%) translateY(16px);
+  background:var(--green);color:#fff;padding:8px 20px;border-radius:20px;
   font-size:13px;font-weight:600;opacity:0;transition:all .25s;z-index:999;
-  pointer-events:none;white-space:nowrap
+  pointer-events:none;white-space:nowrap;
 }
 .toast.show{opacity:1;transform:translateX(-50%) translateY(0)}
 
 /* scrollbar */
-.panel::-webkit-scrollbar{width:4px}
+.panel::-webkit-scrollbar{width:3px}
+.panel::-webkit-scrollbar-thumb{background:var(--line);border-radius:2px}
 .panel::-webkit-scrollbar-track{background:transparent}
-.panel::-webkit-scrollbar-thumb{background:var(--border);border-radius:2px}
 </style>
 </head>
 <body>
 <div id="app">
 
 <!-- ── HEADER ── -->
-<div id="header">
-  <div class="hdr-inner">
+<div id="hdr">
+  <div class="hdr-top">
     <div>
-      <div class="hdr-title">✈️ Europa 2026</div>
-      <div class="hdr-sub">Leco & Gabi · 16 dias · 4 cidades</div>
+      <div class="trip-name">Europa 2026</div>
+      <div class="trip-sub">Leco &amp; Gabi · 01–16 de Março</div>
     </div>
-    <div class="trip-status" id="tripStatus">carregando...</div>
+    <div class="status-pill before" id="statusPill">…</div>
   </div>
-  <div class="progress-wrap"><div class="progress-fill" id="progressFill"></div></div>
-  <div class="city-strip">
-    <span class="city-chip chip-m">🇮🇹 Milão</span>
-    <span class="city-chip chip-f">🇮🇹 Florença</span>
-    <span class="city-chip chip-r">🇮🇹 Roma</span>
-    <span class="city-chip chip-p">🇫🇷 Paris</span>
-    <span class="city-chip chip-t">✈️ Trânsito</span>
+  <div class="city-row">
+    <span class="city-chip chip-m">✈ Milão</span>
+    <span class="city-chip chip-f">✈ Florença</span>
+    <span class="city-chip chip-r">✈ Roma</span>
+    <span class="city-chip chip-p">✈ Paris</span>
+    <span class="city-chip chip-t">✈ Trânsito</span>
   </div>
+  <div class="prog-wrap"><div class="prog-fill" id="progFill"></div></div>
 </div>
 
 <!-- ── PANELS ── -->
 <div id="panels">
 
-<!-- ════ TIMELINE ════ -->
+<!-- ════ ROTEIRO ════ -->
 <div class="panel active" id="panel-timeline">
-<div id="timeline">
 
-<!-- Dia 1 -->
-<div class="day" data-date="2026-03-01" data-city="transit">
-  <div class="day-line">
-    <div class="day-line-top" style="background:var(--transit)"></div>
-    <div class="day-dot" style="background:var(--transit);color:#fff">1</div>
-    <div class="day-line-bot" style="background:var(--milan)"></div>
+<!-- helper macro: each .tl-dash connects cards visually -->
+
+<!-- DIA 1 -->
+<div class="day">
+<div class="day-card city-t" id="day-1" onclick="toggleDay(this)">
+  <div class="day-hdr">
+    <div class="day-num">1</div>
+    <div class="day-info">
+      <div class="day-title">Embarque 🛫</div>
+      <div class="day-date">Sábado, 01 de Março</div>
+      <div class="day-stamp">✈ CNF → GRU → MXP</div>
+    </div>
+    <div class="day-chevron">›</div>
   </div>
-  <div class="day-card" onclick="toggleDay(this)">
-    <div class="day-header">
-      <div class="day-header-left">
-        <div class="day-title-row">
-          <div class="day-title">Embarque 🛫</div>
-          <div class="day-date">Sáb 01/03</div>
-        </div>
-        <div class="day-city-tag chip-t">✈️ Trânsito · CNF→GRU→MXP</div>
-      </div>
-      <div class="day-chevron">›</div>
-    </div>
-    <div class="day-body">
-      <div class="ev transport"><div class="ev-row" onclick="toggleEv(event,this.parentElement)"><div class="ev-time">11:05</div><div class="ev-main"><div class="ev-name">✈️ LA3039: CNF → CGH</div></div><div class="ev-chevron">›</div></div><div class="ev-detail-wrap"><div class="ev-info">Cód: UMWVRD · Leco GF497058 · Gabi GG827112</div></div></div>
-      <div class="ev transport"><div class="ev-row" onclick="toggleEv(event,this.parentElement)"><div class="ev-time">18:00</div><div class="ev-main"><div class="ev-name">✈️ LA8072: GRU → Milão MXP</div></div><div class="ev-chevron">›</div></div><div class="ev-detail-wrap"><div class="ev-info">Voo noturno · Chega 02/03 às 09:15 · Cód: UMWVRD</div></div></div>
-    </div>
+  <div class="day-body">
+    <div class="ev transport"><div class="ev-row" onclick="toggleEv(event,this.parentElement)"><div class="ev-time">11:05</div><div class="ev-main"><div class="ev-name">✈️ LA3039: CNF → CGH</div></div><div class="ev-chev">›</div></div><div class="ev-detail"><div class="ev-info">Cód: UMWVRD · Leco GF497058 · Gabi GG827112</div></div></div>
+    <div class="ev transport"><div class="ev-row" onclick="toggleEv(event,this.parentElement)"><div class="ev-time">18:00</div><div class="ev-main"><div class="ev-name">✈️ LA8072: GRU → Milão MXP</div></div><div class="ev-chev">›</div></div><div class="ev-detail"><div class="ev-info">Voo noturno · Chega 02/03 às 09:15 · Cód: UMWVRD</div></div></div>
   </div>
 </div>
+</div>
+<div class="tl-dash city-m"></div>
 
-<!-- Dia 2 -->
-<div class="day" data-date="2026-03-02" data-city="milan" data-route="https://www.google.com/maps/dir/Milan+Malpensa+Airport/Milano+Centrale+Station/Via+Copernico+49+Milan/Piazza+del+Duomo+Milan/Corso+Vittorio+Emanuele+II+Milan/Uniqlo+Via+Torino+Milan/Pam+Supermercato+Via+Medici+10+Milan">
-  <div class="day-line">
-    <div class="day-line-top" style="background:var(--milan)"></div>
-    <div class="day-dot" style="background:var(--milan);color:#fff">2</div>
-    <div class="day-line-bot" style="background:var(--milan)"></div>
+<!-- DIA 2 -->
+<div class="day">
+<div class="day-card city-m" id="day-2" onclick="toggleDay(this)">
+  <div class="day-hdr">
+    <div class="day-num">2</div>
+    <div class="day-info">
+      <div class="day-title">Chegada em Milão 🇮🇹</div>
+      <div class="day-date">Domingo, 02 de Março</div>
+      <div class="day-stamp">🇮🇹 Milão · Smart Central Loft</div>
+    </div>
+    <div class="day-chevron">›</div>
   </div>
-  <div class="day-card" onclick="toggleDay(this)">
-    <div class="day-header">
-      <div class="day-header-left">
-        <div class="day-title-row">
-          <div class="day-title">Chegada em Milão 🇮🇹</div>
-          <div class="day-date">Dom 02/03</div>
-        </div>
-        <div class="day-city-tag chip-m">🇮🇹 Milão · Smart Central Loft</div>
-      </div>
-      <div class="day-chevron">›</div>
-    </div>
-    <div class="day-body">
-      <div class="day-alert">⚠️ Check-in online Vikey obrigatório (por lei) antes de chegar — Cód: PHEB7ABY</div>
-      <a class="route-btn" href="https://www.google.com/maps/dir/Milan+Malpensa+Airport/Milano+Centrale+Station/Via+Copernico+49+Milan/Piazza+del+Duomo+Milan/Corso+Vittorio+Emanuele+II+Milan/Uniqlo+Via+Torino+Milan/Pam+Supermercato+Via+Medici+10+Milan" target="_blank">🗺️ Ver trajeto completo do dia</a>
-      <div class="ev transport"><div class="ev-row" onclick="toggleEv(event,this.parentElement)"><div class="ev-time">09:15</div><div class="ev-main"><div class="ev-name">🛬 Pouso em Malpensa (MXP)</div></div><div class="ev-chevron">›</div></div><div class="ev-detail-wrap"><div class="ev-info">Terminal 1 · Desembarque internacional</div></div></div>
-      <div class="ev transport"><div class="ev-row" onclick="toggleEv(event,this.parentElement)"><div class="ev-time">~10:15</div><div class="ev-main"><div class="ev-name">🚌 Terravision bus → Centrale</div></div><div class="ev-chevron">›</div></div><div class="ev-detail-wrap"><div class="ev-info">~1h10 · ~€5–8/pessoa · comprar online terravision.eu · parte em frente ao terminal</div><a class="map-btn" href="https://www.google.com/maps/dir/Milan+Malpensa+Airport/Milano+Centrale+Station" target="_blank">📍 Ver trajeto</a></div></div>
-      <div class="ev stay"><div class="ev-row" onclick="toggleEv(event,this.parentElement)"><div class="ev-time">~11:30</div><div class="ev-main"><div class="ev-name">🧳 Deixar malas no Airbnb</div></div><div class="ev-chevron">›</div></div><div class="ev-detail-wrap"><div class="ev-info">Confirmar com Claudio se pode deixar malas antes das 14h</div><a class="map-btn" href="https://www.google.com/maps/search/Via+Copernico+49+Milan" target="_blank">📍 Via Copernico 49</a></div></div>
-      <div class="ev transport"><div class="ev-row" onclick="toggleEv(event,this.parentElement)"><div class="ev-time">Centro</div><div class="ev-main"><div class="ev-name">🚇 Airbnb → Duomo: M3 República</div></div><div class="ev-chevron">›</div></div><div class="ev-detail-wrap"><div class="ev-info">🚶 7 min a pé até estação Repubblica (M3) → 3 paradas → Duomo · €2/pessoa · ~15 min total</div><a class="map-btn" href="https://www.google.com/maps/dir/Via+Copernico+49+Milan/Duomo+Metro+Station+Milan" target="_blank">📍 Ver trajeto</a></div></div>
-      <div class="ev food"><div class="ev-row" onclick="toggleEv(event,this.parentElement)"><div class="ev-time">12:00</div><div class="ev-main"><div class="ev-name">🍕 Almoço — Di Gennaro</div></div><div class="ev-chevron">›</div></div><div class="ev-detail-wrap"><div class="ev-info">Pizzeria Di Gennaro · Via Santa Radegonda 14</div><a class="map-btn" href="https://www.google.com/maps/search/Pizzeria+Di+Gennaro+Via+Santa+Radegonda+Milan" target="_blank">📍 Ver no mapa</a></div></div>
-      <div class="ev attraction"><div class="ev-row" onclick="toggleEv(event,this.parentElement)"><div class="ev-time">Tarde</div><div class="ev-main"><div class="ev-name">🏛️ Duomo + Galleria</div></div><div class="ev-chevron">›</div></div><div class="ev-detail-wrap"><a class="map-btn" href="https://www.google.com/maps/search/Piazza+del+Duomo+Milan" target="_blank">📍 Ver no mapa</a></div></div>
-      <div class="ev shopping"><div class="ev-row" onclick="toggleEv(event,this.parentElement)"><div class="ev-time">Tarde</div><div class="ev-main"><div class="ev-name">🛍️ Bershka + Zara · roupa de frio</div></div><div class="ev-chevron">›</div></div><div class="ev-detail-wrap"><div class="ev-info">Corso Vittorio Emanuele II 22 · 2 min do Duomo · lado a lado</div><a class="map-btn" href="https://www.google.com/maps/search/Bershka+Corso+Vittorio+Emanuele+Milan" target="_blank">📍 Ver no mapa</a></div></div>
-      <div class="ev shopping"><div class="ev-row" onclick="toggleEv(event,this.parentElement)"><div class="ev-time">Tarde</div><div class="ev-main"><div class="ev-name">👕 Uniqlo · Via Torino 12</div></div><div class="ev-chevron">›</div></div><div class="ev-detail-wrap"><div class="ev-info">Térmicas e básicos leves — boa opção complementar</div><a class="map-btn" href="https://www.google.com/maps/search/Uniqlo+Via+Torino+Milan" target="_blank">📍 Ver no mapa</a></div></div>
-      <div class="ev shopping"><div class="ev-row" onclick="toggleEv(event,this.parentElement)"><div class="ev-time">Tarde</div><div class="ev-main"><div class="ev-name">🕶️ Ray-Ban Meta — Salmoiraghi e Viganò</div></div><div class="ev-chevron">›</div></div><div class="ev-detail-wrap"><a class="map-btn" href="https://www.google.com/maps/search/Salmoiraghi+Vigano+Milan+centro" target="_blank">📍 Ver no mapa</a></div></div>
-      <div class="ev shopping"><div class="ev-row" onclick="toggleEv(event,this.parentElement)"><div class="ev-time">Tarde</div><div class="ev-main"><div class="ev-name">🛒 Pam Supermercado</div></div><div class="ev-chevron">›</div></div><div class="ev-detail-wrap"><div class="ev-info">Via Medici 10 · comida pro Lake Como</div><a class="map-btn" href="https://www.google.com/maps/search/Pam+Via+Medici+Milan" target="_blank">📍 Ver no mapa</a></div></div>
-      <div class="ev stay"><div class="ev-row" onclick="toggleEv(event,this.parentElement)"><div class="ev-time">14:00</div><div class="ev-main"><div class="ev-name">🧳 Deixar bagagem</div></div><div class="ev-chevron">›</div></div><div class="ev-detail-wrap"><div class="ev-info">Via Copernico 49 (a partir das 14h)</div></div></div>
-      <div class="ev stay"><div class="ev-row" onclick="toggleEv(event,this.parentElement)"><div class="ev-time">16:00</div><div class="ev-main"><div class="ev-name">🏠 Check-in Smart Central Loft</div></div><div class="ev-chevron">›</div></div><div class="ev-detail-wrap"><div class="ev-info">Armário de chaves automático · Silêncio a partir das 22h</div></div></div>
-    </div>
+  <div class="day-body">
+    <div class="day-alert">⚠️ Check-in online Vikey obrigatório (por lei) antes de chegar — Cód: PHEB7ABY</div>
+    <a class="route-btn" href="https://www.google.com/maps/dir/Milan+Malpensa+Airport/Milano+Centrale+Station/Via+Copernico+49+Milan/Piazza+del+Duomo+Milan/Corso+Vittorio+Emanuele+II+Milan/Uniqlo+Via+Torino+Milan/Pam+Supermercato+Via+Medici+10+Milan" target="_blank">🗺️ Trajeto completo do dia</a>
+    <div class="ev transport"><div class="ev-row" onclick="toggleEv(event,this.parentElement)"><div class="ev-time">09:15</div><div class="ev-main"><div class="ev-name">🛬 Pouso em Malpensa (MXP)</div></div><div class="ev-chev">›</div></div><div class="ev-detail"><div class="ev-info">Terminal 1 · Desembarque internacional</div></div></div>
+    <div class="ev transport"><div class="ev-row" onclick="toggleEv(event,this.parentElement)"><div class="ev-time">~10:15</div><div class="ev-main"><div class="ev-name">🚌 Terravision bus → Centrale</div></div><div class="ev-chev">›</div></div><div class="ev-detail"><div class="ev-info">~1h10 · ~€5–8/pessoa · comprar online terravision.eu · parte em frente ao terminal</div><a class="map-btn" href="https://www.google.com/maps/dir/Milan+Malpensa+Airport/Milano+Centrale+Station" target="_blank">📍 Ver trajeto</a></div></div>
+    <div class="ev stay"><div class="ev-row" onclick="toggleEv(event,this.parentElement)"><div class="ev-time">~11:30</div><div class="ev-main"><div class="ev-name">🧳 Deixar malas no Airbnb</div></div><div class="ev-chev">›</div></div><div class="ev-detail"><div class="ev-info">Confirmar com Claudio se pode deixar malas antes das 14h</div><a class="map-btn" href="https://www.google.com/maps/search/Via+Copernico+49+Milan" target="_blank">📍 Via Copernico 49</a></div></div>
+    <div class="ev transport"><div class="ev-row" onclick="toggleEv(event,this.parentElement)"><div class="ev-time">Centro</div><div class="ev-main"><div class="ev-name">🚇 Airbnb → Duomo: M3 República</div></div><div class="ev-chev">›</div></div><div class="ev-detail"><div class="ev-info">7 min a pé até estação Repubblica (M3) → 3 paradas → Duomo · €2/pessoa · ~15 min</div><a class="map-btn" href="https://www.google.com/maps/dir/Via+Copernico+49+Milan/Duomo+Metro+Station+Milan" target="_blank">📍 Ver trajeto</a></div></div>
+    <div class="ev food"><div class="ev-row" onclick="toggleEv(event,this.parentElement)"><div class="ev-time">12:00</div><div class="ev-main"><div class="ev-name">🍕 Almoço — Di Gennaro</div></div><div class="ev-chev">›</div></div><div class="ev-detail"><div class="ev-info">Pizzeria Di Gennaro · Via Santa Radegonda 14</div><a class="map-btn" href="https://www.google.com/maps/search/Pizzeria+Di+Gennaro+Via+Santa+Radegonda+Milan" target="_blank">📍 Ver no mapa</a></div></div>
+    <div class="ev attraction"><div class="ev-row" onclick="toggleEv(event,this.parentElement)"><div class="ev-time">Tarde</div><div class="ev-main"><div class="ev-name">🏛️ Duomo + Galleria Vittorio Emanuele</div></div><div class="ev-chev">›</div></div><div class="ev-detail"><a class="map-btn" href="https://www.google.com/maps/search/Piazza+del+Duomo+Milan" target="_blank">📍 Ver no mapa</a></div></div>
+    <div class="ev shopping"><div class="ev-row" onclick="toggleEv(event,this.parentElement)"><div class="ev-time">Tarde</div><div class="ev-main"><div class="ev-name">🛍️ Bershka + Zara · roupa de frio</div></div><div class="ev-chev">›</div></div><div class="ev-detail"><div class="ev-info">Corso Vittorio Emanuele II 22 · 2 min do Duomo · lado a lado</div><a class="map-btn" href="https://www.google.com/maps/search/Bershka+Corso+Vittorio+Emanuele+Milan" target="_blank">📍 Ver no mapa</a></div></div>
+    <div class="ev shopping"><div class="ev-row" onclick="toggleEv(event,this.parentElement)"><div class="ev-time">Tarde</div><div class="ev-main"><div class="ev-name">👕 Uniqlo · Via Torino 12</div></div><div class="ev-chev">›</div></div><div class="ev-detail"><div class="ev-info">Térmicas e básicos leves — boa opção complementar</div><a class="map-btn" href="https://www.google.com/maps/search/Uniqlo+Via+Torino+Milan" target="_blank">📍 Ver no mapa</a></div></div>
+    <div class="ev shopping"><div class="ev-row" onclick="toggleEv(event,this.parentElement)"><div class="ev-time">Tarde</div><div class="ev-main"><div class="ev-name">🕶️ Ray-Ban Meta — Salmoiraghi e Viganò</div></div><div class="ev-chev">›</div></div><div class="ev-detail"><a class="map-btn" href="https://www.google.com/maps/search/Salmoiraghi+Vigano+Milan+centro" target="_blank">📍 Ver no mapa</a></div></div>
+    <div class="ev shopping"><div class="ev-row" onclick="toggleEv(event,this.parentElement)"><div class="ev-time">Tarde</div><div class="ev-main"><div class="ev-name">🛒 Pam Supermercado · Via Medici 10</div></div><div class="ev-chev">›</div></div><div class="ev-detail"><div class="ev-info">Comida pro Lake Como · aberto até 22h</div><a class="map-btn" href="https://www.google.com/maps/search/Pam+Via+Medici+Milan" target="_blank">📍 Ver no mapa</a></div></div>
+    <div class="ev stay"><div class="ev-row" onclick="toggleEv(event,this.parentElement)"><div class="ev-time">14:00</div><div class="ev-main"><div class="ev-name">🧳 Deixar bagagem · Via Copernico 49</div></div><div class="ev-chev">›</div></div><div class="ev-detail"><div class="ev-info">A partir das 14h</div></div></div>
+    <div class="ev stay"><div class="ev-row" onclick="toggleEv(event,this.parentElement)"><div class="ev-time">16:00</div><div class="ev-main"><div class="ev-name">🏠 Check-in Smart Central Loft</div></div><div class="ev-chev">›</div></div><div class="ev-detail"><div class="ev-info">Armário de chaves automático · Silêncio a partir das 22h</div></div></div>
   </div>
 </div>
+</div>
+<div class="tl-dash city-m"></div>
 
-<!-- Dia 3 -->
-<div class="day" data-date="2026-03-03" data-city="milan" data-route="https://www.google.com/maps/dir/Milano+Centrale+Station/Varenna+Italy/Bellagio+Lake+Como+Italy/Menaggio+Italy/Milano+Centrale+Station">
-  <div class="day-line">
-    <div class="day-line-top" style="background:var(--milan)"></div>
-    <div class="day-dot" style="background:var(--milan);color:#fff">3</div>
-    <div class="day-line-bot" style="background:var(--florence)"></div>
+<!-- DIA 3 -->
+<div class="day">
+<div class="day-card city-m" id="day-3" onclick="toggleDay(this)">
+  <div class="day-hdr">
+    <div class="day-num">3</div>
+    <div class="day-info">
+      <div class="day-title">Day Trip Lake Como 🏔️</div>
+      <div class="day-date">Segunda-feira, 03 de Março</div>
+      <div class="day-stamp">🇮🇹 Milão · Varenna &amp; Bellagio</div>
+    </div>
+    <div class="day-chevron">›</div>
   </div>
-  <div class="day-card" onclick="toggleDay(this)">
-    <div class="day-header">
-      <div class="day-header-left">
-        <div class="day-title-row">
-          <div class="day-title">Day Trip Lake Como 🏔️</div>
-          <div class="day-date">Seg 03/03</div>
-        </div>
-        <div class="day-city-tag chip-m">🇮🇹 Milão · Varenna & Bellagio</div>
-      </div>
-      <div class="day-chevron">›</div>
-    </div>
-    <div class="day-body">
-      <a class="route-btn" href="https://www.google.com/maps/dir/Milano+Centrale+Station/Varenna+Italy/Bellagio+Lake+Como+Italy/Menaggio+Italy/Milano+Centrale+Station" target="_blank">🗺️ Ver trajeto completo do dia</a>
-      <div class="ev transport"><div class="ev-row" onclick="toggleEv(event,this.parentElement)"><div class="ev-time">Manhã</div><div class="ev-main"><div class="ev-name">🚆 Trem para Varenna</div></div><div class="ev-chevron">›</div></div><div class="ev-detail-wrap"><div class="ev-info">Milano Centrale → Varenna-Esino · ~1h</div><a class="map-btn" href="https://www.google.com/maps/dir/Milano+Centrale+Station/Varenna+Esino+Station" target="_blank">📍 Ver trajeto</a></div></div>
-      <div class="ev attraction"><div class="ev-row" onclick="toggleEv(event,this.parentElement)"><div class="ev-time">Manhã</div><div class="ev-main"><div class="ev-name">⛵ Passeio de barco</div></div><div class="ev-chevron">›</div></div><div class="ev-detail-wrap"><div class="ev-info">Varenna → Bellagio → Menaggio</div><a class="map-btn" href="https://www.google.com/maps/dir/Varenna+Italy/Bellagio+Lake+Como" target="_blank">📍 Ver no mapa</a></div></div>
-      <div class="ev food"><div class="ev-row" onclick="toggleEv(event,this.parentElement)"><div class="ev-time">Almoço</div><div class="ev-main"><div class="ev-name">🍽️ Restaurante com vista pro lago</div></div><div class="ev-chevron">›</div></div><div class="ev-detail-wrap"><div class="ev-info">Bellagio — reservar com antecedência</div></div></div>
-      <div class="ev attraction"><div class="ev-row" onclick="toggleEv(event,this.parentElement)"><div class="ev-time">Tarde</div><div class="ev-main"><div class="ev-name">🏘️ Explorar Bellagio</div></div><div class="ev-chevron">›</div></div><div class="ev-detail-wrap"><a class="map-btn" href="https://www.google.com/maps/search/Bellagio+Lake+Como" target="_blank">📍 Ver no mapa</a></div></div>
-      <div class="ev transport"><div class="ev-row" onclick="toggleEv(event,this.parentElement)"><div class="ev-time">Noite</div><div class="ev-main"><div class="ev-name">🚆 Volta para Milão</div></div><div class="ev-chevron">›</div></div><div class="ev-detail-wrap"><div class="ev-info">Varenna-Esino → Milano Centrale</div></div></div>
-    </div>
+  <div class="day-body">
+    <a class="route-btn" href="https://www.google.com/maps/dir/Milano+Centrale+Station/Varenna+Italy/Bellagio+Lake+Como+Italy/Menaggio+Italy/Milano+Centrale+Station" target="_blank">🗺️ Trajeto completo do dia</a>
+    <div class="ev transport"><div class="ev-row" onclick="toggleEv(event,this.parentElement)"><div class="ev-time">Manhã</div><div class="ev-main"><div class="ev-name">🚆 Trem para Varenna</div></div><div class="ev-chev">›</div></div><div class="ev-detail"><div class="ev-info">Milano Centrale → Varenna-Esino · ~1h</div><a class="map-btn" href="https://www.google.com/maps/dir/Milano+Centrale+Station/Varenna+Esino+Station" target="_blank">📍 Ver trajeto</a></div></div>
+    <div class="ev attraction"><div class="ev-row" onclick="toggleEv(event,this.parentElement)"><div class="ev-time">Manhã</div><div class="ev-main"><div class="ev-name">⛵ Passeio de barco</div></div><div class="ev-chev">›</div></div><div class="ev-detail"><div class="ev-info">Varenna → Bellagio → Menaggio</div><a class="map-btn" href="https://www.google.com/maps/dir/Varenna+Italy/Bellagio+Lake+Como" target="_blank">📍 Ver no mapa</a></div></div>
+    <div class="ev food"><div class="ev-row" onclick="toggleEv(event,this.parentElement)"><div class="ev-time">Almoço</div><div class="ev-main"><div class="ev-name">🍽️ Restaurante com vista pro lago</div></div><div class="ev-chev">›</div></div><div class="ev-detail"><div class="ev-info">Bellagio — reservar com antecedência</div></div></div>
+    <div class="ev attraction"><div class="ev-row" onclick="toggleEv(event,this.parentElement)"><div class="ev-time">Tarde</div><div class="ev-main"><div class="ev-name">🏘️ Explorar Bellagio</div></div><div class="ev-chev">›</div></div><div class="ev-detail"><a class="map-btn" href="https://www.google.com/maps/search/Bellagio+Lake+Como" target="_blank">📍 Ver no mapa</a></div></div>
+    <div class="ev transport"><div class="ev-row" onclick="toggleEv(event,this.parentElement)"><div class="ev-time">Noite</div><div class="ev-main"><div class="ev-name">🚆 Volta para Milão</div></div><div class="ev-chev">›</div></div><div class="ev-detail"><div class="ev-info">Varenna-Esino → Milano Centrale</div></div></div>
   </div>
 </div>
+</div>
+<div class="tl-dash city-f"></div>
 
-<!-- Dia 4 -->
-<div class="day" data-date="2026-03-04" data-city="florence" data-route="https://www.google.com/maps/dir/Firenze+Santa+Maria+Novella+Station/San+Frediano+Florence/Ponte+Vecchio+Florence/Oltrarno+Florence">
-  <div class="day-line">
-    <div class="day-line-top" style="background:var(--florence)"></div>
-    <div class="day-dot" style="background:var(--florence);color:#fff">4</div>
-    <div class="day-line-bot" style="background:var(--florence)"></div>
+<!-- DIA 4 -->
+<div class="day">
+<div class="day-card city-f" id="day-4" onclick="toggleDay(this)">
+  <div class="day-hdr">
+    <div class="day-num">4</div>
+    <div class="day-info">
+      <div class="day-title">Milão → Florença 🇮🇹</div>
+      <div class="day-date">Terça-feira, 04 de Março</div>
+      <div class="day-stamp">🇮🇹 Florença · San Frediano</div>
+    </div>
+    <div class="day-chevron">›</div>
   </div>
-  <div class="day-card" onclick="toggleDay(this)">
-    <div class="day-header">
-      <div class="day-header-left">
-        <div class="day-title-row">
-          <div class="day-title">Milão → Florença 🇮🇹</div>
-          <div class="day-date">Ter 04/03</div>
-        </div>
-        <div class="day-city-tag chip-f">🇮🇹 Florença · San Frediano</div>
-      </div>
-      <div class="day-chevron">›</div>
-    </div>
-    <div class="day-body">
-      <a class="route-btn" href="https://www.google.com/maps/dir/Firenze+Santa+Maria+Novella+Station/San+Frediano+Florence/Ponte+Vecchio+Florence/Oltrarno+Florence" target="_blank">🗺️ Ver trajeto completo do dia</a>
-      <div class="ev stay"><div class="ev-row" onclick="toggleEv(event,this.parentElement)"><div class="ev-time">até 10h</div><div class="ev-main"><div class="ev-name">🧳 Checkout Milão 1</div></div><div class="ev-chevron">›</div></div><div class="ev-detail-wrap"><div class="ev-info">Via Copernico 49 · antes das 10h</div></div></div>
-      <div class="ev transport"><div class="ev-row" onclick="toggleEv(event,this.parentElement)"><div class="ev-time">Manhã</div><div class="ev-main"><div class="ev-name">🚄 Trem Milão → Florença</div></div><div class="ev-chevron">›</div></div><div class="ev-detail-wrap"><div class="ev-info">Milano Centrale → Firenze SMN · ~1h45 · alta velocidade</div><a class="map-btn" href="https://www.google.com/maps/dir/Milano+Centrale+Station/Firenze+Santa+Maria+Novella" target="_blank">📍 Ver trajeto</a></div></div>
-      <div class="ev stay"><div class="ev-row" onclick="toggleEv(event,this.parentElement)"><div class="ev-time">Tarde</div><div class="ev-main"><div class="ev-name">🏠 Check-in San Frediano Boutique Nº9</div></div><div class="ev-chevron">›</div></div><div class="ev-detail-wrap"><div class="ev-info">Checkout antes das 10h (06/03)</div></div></div>
-      <div class="ev attraction"><div class="ev-row" onclick="toggleEv(event,this.parentElement)"><div class="ev-time">Tarde</div><div class="ev-main"><div class="ev-name">🌉 Ponte Vecchio ao pôr do sol</div></div><div class="ev-chevron">›</div></div><div class="ev-detail-wrap"><a class="map-btn" href="https://www.google.com/maps/search/Ponte+Vecchio+Florence" target="_blank">📍 Ver no mapa</a></div></div>
-      <div class="ev food"><div class="ev-row" onclick="toggleEv(event,this.parentElement)"><div class="ev-time">Noite</div><div class="ev-main"><div class="ev-name">🍷 Jantar em Oltrarno</div></div><div class="ev-chevron">›</div></div><div class="ev-detail-wrap"><div class="ev-info">Bairro local — melhor que o centro turístico</div><a class="map-btn" href="https://www.google.com/maps/search/restaurants+Oltrarno+Florence" target="_blank">📍 Ver restaurantes</a></div></div>
-    </div>
+  <div class="day-body">
+    <a class="route-btn" href="https://www.google.com/maps/dir/Firenze+Santa+Maria+Novella+Station/San+Frediano+Florence/Ponte+Vecchio+Florence/Oltrarno+Florence" target="_blank">🗺️ Trajeto completo do dia</a>
+    <div class="ev stay"><div class="ev-row" onclick="toggleEv(event,this.parentElement)"><div class="ev-time">até 10h</div><div class="ev-main"><div class="ev-name">🧳 Checkout Milão 1</div></div><div class="ev-chev">›</div></div><div class="ev-detail"><div class="ev-info">Via Copernico 49 · antes das 10h</div></div></div>
+    <div class="ev transport"><div class="ev-row" onclick="toggleEv(event,this.parentElement)"><div class="ev-time">Manhã</div><div class="ev-main"><div class="ev-name">🚄 Trem Milão → Florença</div></div><div class="ev-chev">›</div></div><div class="ev-detail"><div class="ev-info">Milano Centrale → Firenze SMN · ~1h45 · alta velocidade</div><a class="map-btn" href="https://www.google.com/maps/dir/Milano+Centrale+Station/Firenze+Santa+Maria+Novella" target="_blank">📍 Ver trajeto</a></div></div>
+    <div class="ev stay"><div class="ev-row" onclick="toggleEv(event,this.parentElement)"><div class="ev-time">Tarde</div><div class="ev-main"><div class="ev-name">🏠 Check-in San Frediano Boutique Nº9</div></div><div class="ev-chev">›</div></div><div class="ev-detail"><div class="ev-info">Checkout antes das 10h (06/03)</div></div></div>
+    <div class="ev attraction"><div class="ev-row" onclick="toggleEv(event,this.parentElement)"><div class="ev-time">Tarde</div><div class="ev-main"><div class="ev-name">🌉 Ponte Vecchio ao pôr do sol</div></div><div class="ev-chev">›</div></div><div class="ev-detail"><a class="map-btn" href="https://www.google.com/maps/search/Ponte+Vecchio+Florence" target="_blank">📍 Ver no mapa</a></div></div>
+    <div class="ev food"><div class="ev-row" onclick="toggleEv(event,this.parentElement)"><div class="ev-time">Noite</div><div class="ev-main"><div class="ev-name">🍷 Jantar em Oltrarno</div></div><div class="ev-chev">›</div></div><div class="ev-detail"><div class="ev-info">Bairro local — melhor que o centro turístico</div><a class="map-btn" href="https://www.google.com/maps/search/restaurants+Oltrarno+Florence" target="_blank">📍 Ver restaurantes</a></div></div>
   </div>
 </div>
+</div>
+<div class="tl-dash city-f"></div>
 
-<!-- Dia 5 -->
-<div class="day" data-date="2026-03-05" data-city="florence" data-route="https://www.google.com/maps/dir/Uffizi+Gallery+Florence/Piazzale+Michelangelo+Florence/Trattoria+Mario+Florence">
-  <div class="day-line">
-    <div class="day-line-top" style="background:var(--florence)"></div>
-    <div class="day-dot" style="background:var(--florence);color:#fff">5</div>
-    <div class="day-line-bot" style="background:var(--rome)"></div>
+<!-- DIA 5 -->
+<div class="day">
+<div class="day-card city-f" id="day-5" onclick="toggleDay(this)">
+  <div class="day-hdr">
+    <div class="day-num">5</div>
+    <div class="day-info">
+      <div class="day-title">Florença 🖼️</div>
+      <div class="day-date">Quarta-feira, 05 de Março</div>
+      <div class="day-stamp">🇮🇹 Florença · Uffizi &amp; Michelangelo</div>
+    </div>
+    <div class="day-chevron">›</div>
   </div>
-  <div class="day-card" onclick="toggleDay(this)">
-    <div class="day-header">
-      <div class="day-header-left">
-        <div class="day-title-row">
-          <div class="day-title">Florença 🖼️</div>
-          <div class="day-date">Qua 05/03</div>
-        </div>
-        <div class="day-city-tag chip-f">🇮🇹 Florença · Uffizi & Michelangelo</div>
-      </div>
-      <div class="day-chevron">›</div>
-    </div>
-    <div class="day-body">
-      <div class="day-alert">⚠️ Reservar Uffizi online com antecedência — esgota rápido!</div>
-      <a class="route-btn" href="https://www.google.com/maps/dir/Uffizi+Gallery+Florence/Piazzale+Michelangelo+Florence/Trattoria+Mario+Florence" target="_blank">🗺️ Ver trajeto completo do dia</a>
-      <div class="ev attraction"><div class="ev-row" onclick="toggleEv(event,this.parentElement)"><div class="ev-time">Manhã</div><div class="ev-main"><div class="ev-name">🖼️ Galleria degli Uffizi</div></div><div class="ev-chevron">›</div></div><div class="ev-detail-wrap"><a class="map-btn" href="https://www.google.com/maps/search/Uffizi+Gallery+Florence" target="_blank">📍 Ver no mapa</a></div></div>
-      <div class="ev attraction"><div class="ev-row" onclick="toggleEv(event,this.parentElement)"><div class="ev-time">Tarde</div><div class="ev-main"><div class="ev-name">⛰️ Piazzale Michelangelo</div></div><div class="ev-chevron">›</div></div><div class="ev-detail-wrap"><div class="ev-info">Melhor vista de Florença</div><a class="map-btn" href="https://www.google.com/maps/dir/Uffizi+Gallery+Florence/Piazzale+Michelangelo+Florence" target="_blank">📍 Ver trajeto</a></div></div>
-      <div class="ev food"><div class="ev-row" onclick="toggleEv(event,this.parentElement)"><div class="ev-time">Noite</div><div class="ev-main"><div class="ev-name">🥩 Bistecca alla Fiorentina</div></div><div class="ev-chevron">›</div></div><div class="ev-detail-wrap"><div class="ev-info">Obrigatório pelo menos uma vez — pede mínimo 600g</div><a class="map-btn" href="https://www.google.com/maps/search/bistecca+alla+fiorentina+Florence" target="_blank">📍 Ver restaurantes</a></div></div>
-    </div>
+  <div class="day-body">
+    <div class="day-alert">⚠️ Reservar Uffizi online com antecedência — esgota rápido!</div>
+    <a class="route-btn" href="https://www.google.com/maps/dir/Uffizi+Gallery+Florence/Piazzale+Michelangelo+Florence/Trattoria+Mario+Florence" target="_blank">🗺️ Trajeto completo do dia</a>
+    <div class="ev attraction"><div class="ev-row" onclick="toggleEv(event,this.parentElement)"><div class="ev-time">Manhã</div><div class="ev-main"><div class="ev-name">🖼️ Galleria degli Uffizi</div></div><div class="ev-chev">›</div></div><div class="ev-detail"><a class="map-btn" href="https://www.google.com/maps/search/Uffizi+Gallery+Florence" target="_blank">📍 Ver no mapa</a></div></div>
+    <div class="ev attraction"><div class="ev-row" onclick="toggleEv(event,this.parentElement)"><div class="ev-time">Tarde</div><div class="ev-main"><div class="ev-name">⛰️ Piazzale Michelangelo</div></div><div class="ev-chev">›</div></div><div class="ev-detail"><div class="ev-info">Melhor vista de Florença</div><a class="map-btn" href="https://www.google.com/maps/dir/Uffizi+Gallery+Florence/Piazzale+Michelangelo+Florence" target="_blank">📍 Ver trajeto</a></div></div>
+    <div class="ev food"><div class="ev-row" onclick="toggleEv(event,this.parentElement)"><div class="ev-time">Noite</div><div class="ev-main"><div class="ev-name">🥩 Bistecca alla Fiorentina</div></div><div class="ev-chev">›</div></div><div class="ev-detail"><div class="ev-info">Obrigatório pelo menos uma vez — mínimo 600g, ao ponto ou malpassado</div><a class="map-btn" href="https://www.google.com/maps/search/bistecca+alla+fiorentina+Florence" target="_blank">📍 Ver restaurantes</a></div></div>
   </div>
 </div>
+</div>
+<div class="tl-dash city-r"></div>
 
-<!-- Dia 6 -->
-<div class="day" data-date="2026-03-06" data-city="rome" data-route="https://www.google.com/maps/dir/Firenze+Santa+Maria+Novella+Station/Roma+Termini+Station/Trastevere+Rome">
-  <div class="day-line">
-    <div class="day-line-top" style="background:var(--rome)"></div>
-    <div class="day-dot" style="background:var(--rome);color:#fff">6</div>
-    <div class="day-line-bot" style="background:var(--rome)"></div>
+<!-- DIA 6 -->
+<div class="day">
+<div class="day-card city-r" id="day-6" onclick="toggleDay(this)">
+  <div class="day-hdr">
+    <div class="day-num">6</div>
+    <div class="day-info">
+      <div class="day-title">Florença → Roma 🇮🇹</div>
+      <div class="day-date">Quinta-feira, 06 de Março</div>
+      <div class="day-stamp">🇮🇹 Roma · Trastevere</div>
+    </div>
+    <div class="day-chevron">›</div>
   </div>
-  <div class="day-card" onclick="toggleDay(this)">
-    <div class="day-header">
-      <div class="day-header-left">
-        <div class="day-title-row">
-          <div class="day-title">Florença → Roma 🇮🇹</div>
-          <div class="day-date">Qui 06/03</div>
-        </div>
-        <div class="day-city-tag chip-r">🇮🇹 Roma · Trastevere</div>
-      </div>
-      <div class="day-chevron">›</div>
-    </div>
-    <div class="day-body">
-      <a class="route-btn" href="https://www.google.com/maps/dir/Firenze+Santa+Maria+Novella+Station/Roma+Termini+Station/Trastevere+Rome" target="_blank">🗺️ Ver trajeto completo do dia</a>
-      <div class="ev stay"><div class="ev-row" onclick="toggleEv(event,this.parentElement)"><div class="ev-time">até 10h</div><div class="ev-main"><div class="ev-name">🧳 Checkout Florença</div></div><div class="ev-chevron">›</div></div><div class="ev-detail-wrap"><div class="ev-info">San Frediano Boutique Nº9</div></div></div>
-      <div class="ev transport"><div class="ev-row" onclick="toggleEv(event,this.parentElement)"><div class="ev-time">Manhã</div><div class="ev-main"><div class="ev-name">🚄 Trem Florença → Roma</div></div><div class="ev-chevron">›</div></div><div class="ev-detail-wrap"><div class="ev-info">Firenze SMN → Roma Termini · ~1h30</div><a class="map-btn" href="https://www.google.com/maps/dir/Firenze+Santa+Maria+Novella/Roma+Termini" target="_blank">📍 Ver trajeto</a></div></div>
-      <div class="ev stay"><div class="ev-row" onclick="toggleEv(event,this.parentElement)"><div class="ev-time">Tarde</div><div class="ev-main"><div class="ev-name">🏠 Check-in Camera c/ bagno e giardino</div></div><div class="ev-chevron">›</div></div><div class="ev-detail-wrap"><div class="ev-info">3 noites · R$1.356,09</div></div></div>
-      <div class="ev food"><div class="ev-row" onclick="toggleEv(event,this.parentElement)"><div class="ev-time">Noite</div><div class="ev-main"><div class="ev-name">🍝 Jantar em Trastevere</div></div><div class="ev-chevron">›</div></div><div class="ev-detail-wrap"><div class="ev-info">Bairro mais charmoso de Roma</div><a class="map-btn" href="https://www.google.com/maps/search/restaurants+Trastevere+Rome" target="_blank">📍 Ver restaurantes</a></div></div>
-    </div>
+  <div class="day-body">
+    <a class="route-btn" href="https://www.google.com/maps/dir/Firenze+Santa+Maria+Novella+Station/Roma+Termini+Station/Trastevere+Rome" target="_blank">🗺️ Trajeto completo do dia</a>
+    <div class="ev stay"><div class="ev-row" onclick="toggleEv(event,this.parentElement)"><div class="ev-time">até 10h</div><div class="ev-main"><div class="ev-name">🧳 Checkout Florença</div></div><div class="ev-chev">›</div></div><div class="ev-detail"><div class="ev-info">San Frediano Boutique Nº9</div></div></div>
+    <div class="ev transport"><div class="ev-row" onclick="toggleEv(event,this.parentElement)"><div class="ev-time">Manhã</div><div class="ev-main"><div class="ev-name">🚄 Trem Florença → Roma</div></div><div class="ev-chev">›</div></div><div class="ev-detail"><div class="ev-info">Firenze SMN → Roma Termini · ~1h30</div><a class="map-btn" href="https://www.google.com/maps/dir/Firenze+Santa+Maria+Novella/Roma+Termini" target="_blank">📍 Ver trajeto</a></div></div>
+    <div class="ev stay"><div class="ev-row" onclick="toggleEv(event,this.parentElement)"><div class="ev-time">Tarde</div><div class="ev-main"><div class="ev-name">🏠 Check-in Camera c/ bagno e giardino</div></div><div class="ev-chev">›</div></div><div class="ev-detail"><div class="ev-info">3 noites · R$1.356,09</div></div></div>
+    <div class="ev food"><div class="ev-row" onclick="toggleEv(event,this.parentElement)"><div class="ev-time">Noite</div><div class="ev-main"><div class="ev-name">🍝 Jantar em Trastevere</div></div><div class="ev-chev">›</div></div><div class="ev-detail"><div class="ev-info">Bairro mais charmoso de Roma</div><a class="map-btn" href="https://www.google.com/maps/search/restaurants+Trastevere+Rome" target="_blank">📍 Ver restaurantes</a></div></div>
   </div>
 </div>
+</div>
+<div class="tl-dash city-r"></div>
 
-<!-- Dia 7 -->
-<div class="day" data-date="2026-03-07" data-city="rome" data-route="https://www.google.com/maps/dir/Colosseum+Rome/Roman+Forum+Rome/Vatican+City/Trevi+Fountain+Rome">
-  <div class="day-line">
-    <div class="day-line-top" style="background:var(--rome)"></div>
-    <div class="day-dot" style="background:var(--rome);color:#fff">7</div>
-    <div class="day-line-bot" style="background:var(--rome)"></div>
+<!-- DIA 7 -->
+<div class="day">
+<div class="day-card city-r" id="day-7" onclick="toggleDay(this)">
+  <div class="day-hdr">
+    <div class="day-num">7</div>
+    <div class="day-info">
+      <div class="day-title">Roma — Clássicos 🏛️</div>
+      <div class="day-date">Sexta-feira, 07 de Março</div>
+      <div class="day-stamp">🇮🇹 Roma · Coliseu · Vaticano · Trevi</div>
+    </div>
+    <div class="day-chevron">›</div>
   </div>
-  <div class="day-card" onclick="toggleDay(this)">
-    <div class="day-header">
-      <div class="day-header-left">
-        <div class="day-title-row">
-          <div class="day-title">Roma — Clássicos 🏛️</div>
-          <div class="day-date">Sex 07/03</div>
-        </div>
-        <div class="day-city-tag chip-r">🇮🇹 Roma · Coliseu · Vaticano · Trevi</div>
-      </div>
-      <div class="day-chevron">›</div>
-    </div>
-    <div class="day-body">
-      <div class="day-alert">⚠️ Reservar ingressos online: Coliseu e Vaticano — filas enormes sem reserva!</div>
-      <a class="route-btn" href="https://www.google.com/maps/dir/Colosseum+Rome/Roman+Forum+Rome/Vatican+City/Trevi+Fountain+Rome" target="_blank">🗺️ Ver trajeto completo do dia</a>
-      <div class="ev attraction"><div class="ev-row" onclick="toggleEv(event,this.parentElement)"><div class="ev-time">Manhã</div><div class="ev-main"><div class="ev-name">🏟️ Coliseu + Foro Romano</div></div><div class="ev-chevron">›</div></div><div class="ev-detail-wrap"><a class="map-btn" href="https://www.google.com/maps/search/Colosseum+Rome" target="_blank">📍 Ver no mapa</a></div></div>
-      <div class="ev attraction"><div class="ev-row" onclick="toggleEv(event,this.parentElement)"><div class="ev-time">Tarde</div><div class="ev-main"><div class="ev-name">⛪ Vaticano — Museus + São Pedro</div></div><div class="ev-chevron">›</div></div><div class="ev-detail-wrap"><a class="map-btn" href="https://www.google.com/maps/dir/Colosseum+Rome/Vatican+City" target="_blank">📍 Ver trajeto</a></div></div>
-      <div class="ev attraction"><div class="ev-row" onclick="toggleEv(event,this.parentElement)"><div class="ev-time">Noite</div><div class="ev-main"><div class="ev-name">🌊 Fontana di Trevi</div></div><div class="ev-chevron">›</div></div><div class="ev-detail-wrap"><div class="ev-info">Mais bonita e menos lotada à noite</div><a class="map-btn" href="https://www.google.com/maps/dir/Vatican+City/Trevi+Fountain+Rome" target="_blank">📍 Ver trajeto</a></div></div>
-    </div>
+  <div class="day-body">
+    <div class="day-alert">⚠️ Reservar ingressos online: Coliseu e Vaticano — filas enormes sem reserva!</div>
+    <a class="route-btn" href="https://www.google.com/maps/dir/Colosseum+Rome/Roman+Forum+Rome/Vatican+City/Trevi+Fountain+Rome" target="_blank">🗺️ Trajeto completo do dia</a>
+    <div class="ev attraction"><div class="ev-row" onclick="toggleEv(event,this.parentElement)"><div class="ev-time">Manhã</div><div class="ev-main"><div class="ev-name">🏟️ Coliseu + Foro Romano</div></div><div class="ev-chev">›</div></div><div class="ev-detail"><a class="map-btn" href="https://www.google.com/maps/search/Colosseum+Rome" target="_blank">📍 Ver no mapa</a></div></div>
+    <div class="ev attraction"><div class="ev-row" onclick="toggleEv(event,this.parentElement)"><div class="ev-time">Tarde</div><div class="ev-main"><div class="ev-name">⛪ Vaticano — Museus + São Pedro</div></div><div class="ev-chev">›</div></div><div class="ev-detail"><a class="map-btn" href="https://www.google.com/maps/dir/Colosseum+Rome/Vatican+City" target="_blank">📍 Ver trajeto</a></div></div>
+    <div class="ev attraction"><div class="ev-row" onclick="toggleEv(event,this.parentElement)"><div class="ev-time">Noite</div><div class="ev-main"><div class="ev-name">🌊 Fontana di Trevi</div></div><div class="ev-chev">›</div></div><div class="ev-detail"><div class="ev-info">Mais bonita e menos lotada à noite</div><a class="map-btn" href="https://www.google.com/maps/dir/Vatican+City/Trevi+Fountain+Rome" target="_blank">📍 Ver trajeto</a></div></div>
   </div>
 </div>
+</div>
+<div class="tl-dash city-r"></div>
 
-<!-- Dia 8 -->
-<div class="day" data-date="2026-03-08" data-city="rome" data-route="https://www.google.com/maps/dir/Pantheon+Rome/Piazza+Navona+Rome/Trastevere+Rome">
-  <div class="day-line">
-    <div class="day-line-top" style="background:var(--rome)"></div>
-    <div class="day-dot" style="background:var(--rome);color:#fff">8</div>
-    <div class="day-line-bot" style="background:var(--paris)"></div>
+<!-- DIA 8 -->
+<div class="day">
+<div class="day-card city-r" id="day-8" onclick="toggleDay(this)">
+  <div class="day-hdr">
+    <div class="day-num">8</div>
+    <div class="day-info">
+      <div class="day-title">Roma · 💃 Dia da Mulher 🌹</div>
+      <div class="day-date">Sábado, 08 de Março</div>
+      <div class="day-stamp">🇮🇹 Roma · Pantheon · Navona</div>
+    </div>
+    <div class="day-chevron">›</div>
   </div>
-  <div class="day-card" onclick="toggleDay(this)">
-    <div class="day-header">
-      <div class="day-header-left">
-        <div class="day-title-row">
-          <div class="day-title">Roma · 💃 Dia da Mulher 🌹</div>
-          <div class="day-date">Sáb 08/03</div>
-        </div>
-        <div class="day-city-tag chip-r">🇮🇹 Roma · Pantheon · Navona</div>
-      </div>
-      <div class="day-chevron">›</div>
-    </div>
-    <div class="day-body">
-      <a class="route-btn" href="https://www.google.com/maps/dir/Pantheon+Rome/Piazza+Navona+Rome/Trastevere+Rome" target="_blank">🗺️ Ver trajeto completo do dia</a>
-      <div class="ev attraction"><div class="ev-row" onclick="toggleEv(event,this.parentElement)"><div class="ev-time">Manhã</div><div class="ev-main"><div class="ev-name">🏛️ Pantheon</div></div><div class="ev-chevron">›</div></div><div class="ev-detail-wrap"><div class="ev-info">Chegar cedo</div><a class="map-btn" href="https://www.google.com/maps/search/Pantheon+Rome" target="_blank">📍 Ver no mapa</a></div></div>
-      <div class="ev food"><div class="ev-row" onclick="toggleEv(event,this.parentElement)"><div class="ev-time">Manhã</div><div class="ev-main"><div class="ev-name">🍦 Piazza Navona + gelato</div></div><div class="ev-chevron">›</div></div><div class="ev-detail-wrap"><a class="map-btn" href="https://www.google.com/maps/dir/Pantheon+Rome/Piazza+Navona+Rome" target="_blank">📍 Ver trajeto</a></div></div>
-      <div class="ev attraction"><div class="ev-row" onclick="toggleEv(event,this.parentElement)"><div class="ev-time">Tarde</div><div class="ev-main"><div class="ev-name">🚶 Trastevere de dia</div></div><div class="ev-chevron">›</div></div><div class="ev-detail-wrap"><a class="map-btn" href="https://www.google.com/maps/search/Trastevere+Rome" target="_blank">📍 Ver no mapa</a></div></div>
-      <div class="ev food"><div class="ev-row" onclick="toggleEv(event,this.parentElement)"><div class="ev-time">Noite</div><div class="ev-main"><div class="ev-name">🌹 Jantar especial — Dia da Mulher</div></div><div class="ev-chevron">›</div></div><div class="ev-detail-wrap"><div class="ev-info">Reservar com antecedência!</div></div></div>
-    </div>
+  <div class="day-body">
+    <a class="route-btn" href="https://www.google.com/maps/dir/Pantheon+Rome/Piazza+Navona+Rome/Trastevere+Rome" target="_blank">🗺️ Trajeto completo do dia</a>
+    <div class="ev attraction"><div class="ev-row" onclick="toggleEv(event,this.parentElement)"><div class="ev-time">Manhã</div><div class="ev-main"><div class="ev-name">🏛️ Pantheon</div></div><div class="ev-chev">›</div></div><div class="ev-detail"><div class="ev-info">Chegar cedo</div><a class="map-btn" href="https://www.google.com/maps/search/Pantheon+Rome" target="_blank">📍 Ver no mapa</a></div></div>
+    <div class="ev food"><div class="ev-row" onclick="toggleEv(event,this.parentElement)"><div class="ev-time">Manhã</div><div class="ev-main"><div class="ev-name">🍦 Piazza Navona + gelato</div></div><div class="ev-chev">›</div></div><div class="ev-detail"><a class="map-btn" href="https://www.google.com/maps/dir/Pantheon+Rome/Piazza+Navona+Rome" target="_blank">📍 Ver trajeto</a></div></div>
+    <div class="ev attraction"><div class="ev-row" onclick="toggleEv(event,this.parentElement)"><div class="ev-time">Tarde</div><div class="ev-main"><div class="ev-name">🚶 Trastevere de dia</div></div><div class="ev-chev">›</div></div><div class="ev-detail"><a class="map-btn" href="https://www.google.com/maps/search/Trastevere+Rome" target="_blank">📍 Ver no mapa</a></div></div>
+    <div class="ev food"><div class="ev-row" onclick="toggleEv(event,this.parentElement)"><div class="ev-time">Noite</div><div class="ev-main"><div class="ev-name">🌹 Jantar especial — Dia da Mulher</div></div><div class="ev-chev">›</div></div><div class="ev-detail"><div class="ev-info">Reservar com antecedência!</div></div></div>
   </div>
 </div>
+</div>
+<div class="tl-dash city-p"></div>
 
-<!-- Dia 9 -->
-<div class="day" data-date="2026-03-09" data-city="paris" data-route="https://www.google.com/maps/dir/Paris+Orly+Airport/Denfert-Rochereau+Paris/Eiffel+Tower+Paris">
-  <div class="day-line">
-    <div class="day-line-top" style="background:var(--paris)"></div>
-    <div class="day-dot" style="background:var(--paris);color:#fff">9</div>
-    <div class="day-line-bot" style="background:var(--paris)"></div>
+<!-- DIA 9 -->
+<div class="day">
+<div class="day-card city-p" id="day-9" onclick="toggleDay(this)">
+  <div class="day-hdr">
+    <div class="day-num">9</div>
+    <div class="day-info">
+      <div class="day-title">Roma → Paris 🇫🇷</div>
+      <div class="day-date">Domingo, 09 de Março</div>
+      <div class="day-stamp">🇫🇷 Paris · Transavia QE75XJ</div>
+    </div>
+    <div class="day-chevron">›</div>
   </div>
-  <div class="day-card" onclick="toggleDay(this)">
-    <div class="day-header">
-      <div class="day-header-left">
-        <div class="day-title-row">
-          <div class="day-title">Roma → Paris 🇫🇷</div>
-          <div class="day-date">Dom 09/03</div>
-        </div>
-        <div class="day-city-tag chip-p">🇫🇷 Paris · Transavia QE75XJ</div>
-      </div>
-      <div class="day-chevron">›</div>
-    </div>
-    <div class="day-body">
-      <a class="route-btn" href="https://www.google.com/maps/dir/Paris+Orly+Airport/Denfert-Rochereau+Paris/Eiffel+Tower+Paris" target="_blank">🗺️ Ver trajeto completo do dia</a>
-      <div class="ev stay"><div class="ev-row" onclick="toggleEv(event,this.parentElement)"><div class="ev-time">Manhã</div><div class="ev-main"><div class="ev-name">🧳 Checkout Roma + Transfer FCO</div></div><div class="ev-chevron">›</div></div><div class="ev-detail-wrap"><div class="ev-info">Camera c/ bagno e giardino</div></div></div>
-      <div class="ev transport"><div class="ev-row" onclick="toggleEv(event,this.parentElement)"><div class="ev-time">12:10</div><div class="ev-main"><div class="ev-name">✈️ Transavia FCO → Paris Orly</div></div><div class="ev-chevron">›</div></div><div class="ev-detail-wrap"><div class="ev-info">Cód: QE75XJ · Chega 14:25 · €162</div><a class="map-btn" href="https://www.google.com/maps/dir/Rome+Fiumicino+Airport/Paris+Orly+Airport" target="_blank">📍 Ver rota</a></div></div>
-      <div class="ev transport"><div class="ev-row" onclick="toggleEv(event,this.parentElement)"><div class="ev-time">~15:00</div><div class="ev-main"><div class="ev-name">🚌 ORY → Paris centro</div></div><div class="ev-chevron">›</div></div><div class="ev-detail-wrap"><div class="ev-info">Orlybus → Denfert-Rochereau · ~30 min</div><a class="map-btn" href="https://www.google.com/maps/dir/Paris+Orly+Airport/Paris+France" target="_blank">📍 Ver trajeto</a></div></div>
-      <div class="ev stay"><div class="ev-row" onclick="toggleEv(event,this.parentElement)"><div class="ev-time">Tarde</div><div class="ev-main"><div class="ev-name">🏠 Casa da Ana Luiza</div></div><div class="ev-chevron">›</div></div><div class="ev-detail-wrap"><div class="ev-info">Mãe do Lorenzo, amigo de infância do Leco</div></div></div>
-      <div class="ev attraction"><div class="ev-row" onclick="toggleEv(event,this.parentElement)"><div class="ev-time">Noite</div><div class="ev-main"><div class="ev-name">🗼 Torre Eiffel iluminada</div></div><div class="ev-chevron">›</div></div><div class="ev-detail-wrap"><a class="map-btn" href="https://www.google.com/maps/search/Eiffel+Tower+Paris" target="_blank">📍 Ver no mapa</a></div></div>
-    </div>
+  <div class="day-body">
+    <a class="route-btn" href="https://www.google.com/maps/dir/Paris+Orly+Airport/Denfert-Rochereau+Paris/Eiffel+Tower+Paris" target="_blank">🗺️ Trajeto completo do dia</a>
+    <div class="ev stay"><div class="ev-row" onclick="toggleEv(event,this.parentElement)"><div class="ev-time">Manhã</div><div class="ev-main"><div class="ev-name">🧳 Checkout Roma + Transfer FCO</div></div><div class="ev-chev">›</div></div><div class="ev-detail"><div class="ev-info">Camera c/ bagno e giardino</div></div></div>
+    <div class="ev transport"><div class="ev-row" onclick="toggleEv(event,this.parentElement)"><div class="ev-time">12:10</div><div class="ev-main"><div class="ev-name">✈️ Transavia FCO → Paris Orly</div></div><div class="ev-chev">›</div></div><div class="ev-detail"><div class="ev-info">Cód: QE75XJ · Chega 14:25 · €162</div><a class="map-btn" href="https://www.google.com/maps/dir/Rome+Fiumicino+Airport/Paris+Orly+Airport" target="_blank">📍 Ver rota</a></div></div>
+    <div class="ev transport"><div class="ev-row" onclick="toggleEv(event,this.parentElement)"><div class="ev-time">~15:00</div><div class="ev-main"><div class="ev-name">🚌 ORY → Paris centro</div></div><div class="ev-chev">›</div></div><div class="ev-detail"><div class="ev-info">Orlybus → Denfert-Rochereau · ~30 min</div><a class="map-btn" href="https://www.google.com/maps/dir/Paris+Orly+Airport/Paris+France" target="_blank">📍 Ver trajeto</a></div></div>
+    <div class="ev stay"><div class="ev-row" onclick="toggleEv(event,this.parentElement)"><div class="ev-time">Tarde</div><div class="ev-main"><div class="ev-name">🏠 Casa da Ana Luiza</div></div><div class="ev-chev">›</div></div><div class="ev-detail"><div class="ev-info">Mãe do Lorenzo, amigo de infância do Leco</div></div></div>
+    <div class="ev attraction"><div class="ev-row" onclick="toggleEv(event,this.parentElement)"><div class="ev-time">Noite</div><div class="ev-main"><div class="ev-name">🗼 Torre Eiffel iluminada</div></div><div class="ev-chev">›</div></div><div class="ev-detail"><a class="map-btn" href="https://www.google.com/maps/search/Eiffel+Tower+Paris" target="_blank">📍 Ver no mapa</a></div></div>
   </div>
 </div>
+</div>
+<div class="tl-dash city-p"></div>
 
-<!-- Dia 10 -->
-<div class="day" data-date="2026-03-10" data-city="paris" data-route="https://www.google.com/maps/dir/Palais+Garnier+Paris/Notre+Dame+de+Paris/Sainte-Chapelle+Paris/Pont+de+l'Alma+Paris">
-  <div class="day-line">
-    <div class="day-line-top" style="background:var(--paris)"></div>
-    <div class="day-dot" style="background:var(--paris);color:#fff">10</div>
-    <div class="day-line-bot" style="background:var(--paris)"></div>
+<!-- DIA 10 -->
+<div class="day">
+<div class="day-card city-p" id="day-10" onclick="toggleDay(this)">
+  <div class="day-hdr">
+    <div class="day-num">10</div>
+    <div class="day-info">
+      <div class="day-title">Paris — Notre Dame &amp; Sena 🛶</div>
+      <div class="day-date">Segunda-feira, 10 de Março</div>
+      <div class="day-stamp">🇫🇷 Paris · Opera · Sainte-Chapelle</div>
+    </div>
+    <div class="day-chevron">›</div>
   </div>
-  <div class="day-card" onclick="toggleDay(this)">
-    <div class="day-header">
-      <div class="day-header-left">
-        <div class="day-title-row">
-          <div class="day-title">Paris — Notre Dame & Sena 🛶</div>
-          <div class="day-date">Seg 10/03</div>
-        </div>
-        <div class="day-city-tag chip-p">🇫🇷 Paris · Opera · Sainte-Chapelle</div>
-      </div>
-      <div class="day-chevron">›</div>
-    </div>
-    <div class="day-body">
-      <a class="route-btn" href="https://www.google.com/maps/dir/Palais+Garnier+Paris/Notre+Dame+de+Paris/Sainte-Chapelle+Paris/Pont+de+l'Alma+Paris" target="_blank">🗺️ Ver trajeto completo do dia</a>
-      <div class="ev attraction"><div class="ev-row" onclick="toggleEv(event,this.parentElement)"><div class="ev-time">Manhã</div><div class="ev-main"><div class="ev-name">🎭 Opera Garnier — Palais Garnier</div></div><div class="ev-chevron">›</div></div><div class="ev-detail-wrap"><a class="map-btn" href="https://www.google.com/maps/search/Palais+Garnier+Paris" target="_blank">📍 Ver no mapa</a></div></div>
-      <div class="ev attraction"><div class="ev-row" onclick="toggleEv(event,this.parentElement)"><div class="ev-time">Tarde</div><div class="ev-main"><div class="ev-name">⛪ Notre Dame</div></div><div class="ev-chevron">›</div></div><div class="ev-detail-wrap"><div class="ev-info">Reaberta em 2024 após o incêndio</div><a class="map-btn" href="https://www.google.com/maps/dir/Palais+Garnier+Paris/Notre-Dame+Cathedral+Paris" target="_blank">📍 Ver trajeto</a></div></div>
-      <div class="ev attraction"><div class="ev-row" onclick="toggleEv(event,this.parentElement)"><div class="ev-time">Tarde</div><div class="ev-main"><div class="ev-name">💒 Sainte-Chapelle</div></div><div class="ev-chevron">›</div></div><div class="ev-detail-wrap"><div class="ev-info">Vitrais medievais incríveis</div><a class="map-btn" href="https://www.google.com/maps/dir/Notre-Dame+Cathedral+Paris/Sainte-Chapelle+Paris" target="_blank">📍 Ver trajeto</a></div></div>
-      <div class="ev attraction"><div class="ev-row" onclick="toggleEv(event,this.parentElement)"><div class="ev-time">Noite</div><div class="ev-main"><div class="ev-name">🛶 Barco no Sena — Bateaux Parisiens</div></div><div class="ev-chevron">›</div></div><div class="ev-detail-wrap"><div class="ev-info">Paris iluminada à noite</div><a class="map-btn" href="https://www.google.com/maps/search/Bateaux+Parisiens+Paris" target="_blank">📍 Ver no mapa</a></div></div>
-    </div>
+  <div class="day-body">
+    <a class="route-btn" href="https://www.google.com/maps/dir/Palais+Garnier+Paris/Notre+Dame+de+Paris/Sainte-Chapelle+Paris/Pont+de+l'Alma+Paris" target="_blank">🗺️ Trajeto completo do dia</a>
+    <div class="ev attraction"><div class="ev-row" onclick="toggleEv(event,this.parentElement)"><div class="ev-time">Manhã</div><div class="ev-main"><div class="ev-name">🎭 Opera Garnier — Palais Garnier</div></div><div class="ev-chev">›</div></div><div class="ev-detail"><a class="map-btn" href="https://www.google.com/maps/search/Palais+Garnier+Paris" target="_blank">📍 Ver no mapa</a></div></div>
+    <div class="ev attraction"><div class="ev-row" onclick="toggleEv(event,this.parentElement)"><div class="ev-time">Tarde</div><div class="ev-main"><div class="ev-name">⛪ Notre Dame</div></div><div class="ev-chev">›</div></div><div class="ev-detail"><div class="ev-info">Reaberta em 2024 após o incêndio</div><a class="map-btn" href="https://www.google.com/maps/dir/Palais+Garnier+Paris/Notre-Dame+Cathedral+Paris" target="_blank">📍 Ver trajeto</a></div></div>
+    <div class="ev attraction"><div class="ev-row" onclick="toggleEv(event,this.parentElement)"><div class="ev-time">Tarde</div><div class="ev-main"><div class="ev-name">💒 Sainte-Chapelle</div></div><div class="ev-chev">›</div></div><div class="ev-detail"><div class="ev-info">Vitrais medievais incríveis</div><a class="map-btn" href="https://www.google.com/maps/dir/Notre-Dame+Cathedral+Paris/Sainte-Chapelle+Paris" target="_blank">📍 Ver trajeto</a></div></div>
+    <div class="ev attraction"><div class="ev-row" onclick="toggleEv(event,this.parentElement)"><div class="ev-time">Noite</div><div class="ev-main"><div class="ev-name">🛶 Barco no Sena — Bateaux Parisiens</div></div><div class="ev-chev">›</div></div><div class="ev-detail"><div class="ev-info">Paris iluminada à noite</div><a class="map-btn" href="https://www.google.com/maps/search/Bateaux+Parisiens+Paris" target="_blank">📍 Ver no mapa</a></div></div>
   </div>
 </div>
+</div>
+<div class="tl-dash city-p"></div>
 
-<!-- Dia 11 -->
-<div class="day" data-date="2026-03-11" data-city="paris" data-route="https://www.google.com/maps/dir/Paris+France/Disneyland+Paris">
-  <div class="day-line">
-    <div class="day-line-top" style="background:var(--paris)"></div>
-    <div class="day-dot" style="background:var(--paris);color:#fff">11</div>
-    <div class="day-line-bot" style="background:var(--paris)"></div>
+<!-- DIA 11 -->
+<div class="day">
+<div class="day-card city-p" id="day-11" onclick="toggleDay(this)">
+  <div class="day-hdr">
+    <div class="day-num">11</div>
+    <div class="day-info">
+      <div class="day-title">Disneyland Paris 🎢</div>
+      <div class="day-date">Terça-feira, 11 de Março</div>
+      <div class="day-stamp">🇫🇷 Paris · Booking 32991570 · €168</div>
+    </div>
+    <div class="day-chevron">›</div>
   </div>
-  <div class="day-card" onclick="toggleDay(this)">
-    <div class="day-header">
-      <div class="day-header-left">
-        <div class="day-title-row">
-          <div class="day-title">Disneyland Paris 🎢</div>
-          <div class="day-date">Ter 11/03</div>
-        </div>
-        <div class="day-city-tag chip-p">🇫🇷 Paris · Dia inteiro · Booking 32991570</div>
-      </div>
-      <div class="day-chevron">›</div>
-    </div>
-    <div class="day-body">
-      <a class="route-btn" href="https://www.google.com/maps/dir/Paris+France/Disneyland+Paris" target="_blank">🗺️ Ver trajeto completo do dia</a>
-      <div class="ev attraction"><div class="ev-row" onclick="toggleEv(event,this.parentElement)"><div class="ev-time">Dia todo</div><div class="ev-main"><div class="ev-name">🎢 Disneyland Paris</div></div><div class="ev-chevron">›</div></div><div class="ev-detail-wrap"><div class="ev-info">Booking: 32991570 · €168 · Leco + Gabi<br>RER A → Marne-la-Vallée-Chessy · ~40 min do centro</div><a class="map-btn" href="https://www.google.com/maps/dir/Paris+France/Disneyland+Paris" target="_blank">📍 Ver trajeto</a></div></div>
-    </div>
+  <div class="day-body">
+    <a class="route-btn" href="https://www.google.com/maps/dir/Paris+France/Disneyland+Paris" target="_blank">🗺️ Trajeto completo do dia</a>
+    <div class="ev attraction"><div class="ev-row" onclick="toggleEv(event,this.parentElement)"><div class="ev-time">Dia todo</div><div class="ev-main"><div class="ev-name">🎢 Disneyland Paris</div></div><div class="ev-chev">›</div></div><div class="ev-detail"><div class="ev-info">Booking: 32991570 · €168 · Leco + Gabi<br>RER A → Marne-la-Vallée-Chessy · ~40 min do centro</div><a class="map-btn" href="https://www.google.com/maps/dir/Paris+France/Disneyland+Paris" target="_blank">📍 Ver trajeto</a></div></div>
   </div>
 </div>
+</div>
+<div class="tl-dash city-p"></div>
 
-<!-- Dia 12 -->
-<div class="day" data-date="2026-03-12" data-city="paris" data-route="https://www.google.com/maps/dir/Pantheon+Paris+France/Parc+Monceau+Paris/Rue+de+l'Abreuvoir+Paris/Le+Marais+Paris">
-  <div class="day-line">
-    <div class="day-line-top" style="background:var(--paris)"></div>
-    <div class="day-dot" style="background:var(--paris);color:#fff">12</div>
-    <div class="day-line-bot" style="background:var(--milan)"></div>
+<!-- DIA 12 -->
+<div class="day">
+<div class="day-card city-p" id="day-12" onclick="toggleDay(this)">
+  <div class="day-hdr">
+    <div class="day-num">12</div>
+    <div class="day-info">
+      <div class="day-title">Paris — Panthéon &amp; Marais 🛍️</div>
+      <div class="day-date">Quarta-feira, 12 de Março</div>
+      <div class="day-stamp">🇫🇷 Paris · Última tarde parisiense</div>
+    </div>
+    <div class="day-chevron">›</div>
   </div>
-  <div class="day-card" onclick="toggleDay(this)">
-    <div class="day-header">
-      <div class="day-header-left">
-        <div class="day-title-row">
-          <div class="day-title">Paris — Panthéon & Marais 🛍️</div>
-          <div class="day-date">Qua 12/03</div>
-        </div>
-        <div class="day-city-tag chip-p">🇫🇷 Paris · Última tarde parisiense</div>
-      </div>
-      <div class="day-chevron">›</div>
-    </div>
-    <div class="day-body">
-      <a class="route-btn" href="https://www.google.com/maps/dir/Pantheon+Paris+France/Parc+Monceau+Paris/Rue+de+l'Abreuvoir+Paris/Le+Marais+Paris" target="_blank">🗺️ Ver trajeto completo do dia</a>
-      <div class="ev attraction"><div class="ev-row" onclick="toggleEv(event,this.parentElement)"><div class="ev-time">Manhã</div><div class="ev-main"><div class="ev-name">🏛️ Panthéon de Paris</div></div><div class="ev-chevron">›</div></div><div class="ev-detail-wrap"><a class="map-btn" href="https://www.google.com/maps/search/Pantheon+Paris" target="_blank">📍 Ver no mapa</a></div></div>
-      <div class="ev attraction"><div class="ev-row" onclick="toggleEv(event,this.parentElement)"><div class="ev-time">Tarde</div><div class="ev-main"><div class="ev-name">🌳 Parc Monceau</div></div><div class="ev-chevron">›</div></div><div class="ev-detail-wrap"><a class="map-btn" href="https://www.google.com/maps/dir/Pantheon+Paris/Parc+Monceau+Paris" target="_blank">📍 Ver trajeto</a></div></div>
-      <div class="ev attraction"><div class="ev-row" onclick="toggleEv(event,this.parentElement)"><div class="ev-time">Tarde</div><div class="ev-main"><div class="ev-name">📺 Emily in Paris spots</div></div><div class="ev-chevron">›</div></div><div class="ev-detail-wrap"><div class="ev-info">Rue de l'Abreuvoir · Place de l'Estrapade</div><a class="map-btn" href="https://www.google.com/maps/search/Rue+de+l+Abreuvoir+Montmartre+Paris" target="_blank">📍 Ver no mapa</a></div></div>
-      <div class="ev shopping"><div class="ev-row" onclick="toggleEv(event,this.parentElement)"><div class="ev-time">Tarde</div><div class="ev-main"><div class="ev-name">🛍️ Le Marais</div></div><div class="ev-chevron">›</div></div><div class="ev-detail-wrap"><a class="map-btn" href="https://www.google.com/maps/search/Le+Marais+Paris" target="_blank">📍 Ver no mapa</a></div></div>
-    </div>
+  <div class="day-body">
+    <a class="route-btn" href="https://www.google.com/maps/dir/Pantheon+Paris+France/Parc+Monceau+Paris/Rue+de+l'Abreuvoir+Paris/Le+Marais+Paris" target="_blank">🗺️ Trajeto completo do dia</a>
+    <div class="ev attraction"><div class="ev-row" onclick="toggleEv(event,this.parentElement)"><div class="ev-time">Manhã</div><div class="ev-main"><div class="ev-name">🏛️ Panthéon de Paris</div></div><div class="ev-chev">›</div></div><div class="ev-detail"><a class="map-btn" href="https://www.google.com/maps/search/Pantheon+Paris" target="_blank">📍 Ver no mapa</a></div></div>
+    <div class="ev attraction"><div class="ev-row" onclick="toggleEv(event,this.parentElement)"><div class="ev-time">Tarde</div><div class="ev-main"><div class="ev-name">🌳 Parc Monceau</div></div><div class="ev-chev">›</div></div><div class="ev-detail"><a class="map-btn" href="https://www.google.com/maps/dir/Pantheon+Paris/Parc+Monceau+Paris" target="_blank">📍 Ver trajeto</a></div></div>
+    <div class="ev attraction"><div class="ev-row" onclick="toggleEv(event,this.parentElement)"><div class="ev-time">Tarde</div><div class="ev-main"><div class="ev-name">📺 Emily in Paris spots</div></div><div class="ev-chev">›</div></div><div class="ev-detail"><div class="ev-info">Rue de l'Abreuvoir · Place de l'Estrapade</div><a class="map-btn" href="https://www.google.com/maps/search/Rue+de+l+Abreuvoir+Montmartre+Paris" target="_blank">📍 Ver no mapa</a></div></div>
+    <div class="ev shopping"><div class="ev-row" onclick="toggleEv(event,this.parentElement)"><div class="ev-time">Tarde</div><div class="ev-main"><div class="ev-name">🛍️ Le Marais</div></div><div class="ev-chev">›</div></div><div class="ev-detail"><a class="map-btn" href="https://www.google.com/maps/search/Le+Marais+Paris" target="_blank">📍 Ver no mapa</a></div></div>
   </div>
 </div>
+</div>
+<div class="tl-dash city-m"></div>
 
-<!-- Dia 13 -->
-<div class="day" data-date="2026-03-13" data-city="milan" data-route="https://www.google.com/maps/dir/Milan+Malpensa+Airport/Milano+Centrale+Station/Nolo+Milan">
-  <div class="day-line">
-    <div class="day-line-top" style="background:var(--milan)"></div>
-    <div class="day-dot" style="background:var(--milan);color:#fff">13</div>
-    <div class="day-line-bot" style="background:var(--milan)"></div>
+<!-- DIA 13 -->
+<div class="day">
+<div class="day-card city-m" id="day-13" onclick="toggleDay(this)">
+  <div class="day-hdr">
+    <div class="day-num">13</div>
+    <div class="day-info">
+      <div class="day-title">Paris → Milão 2 🇮🇹</div>
+      <div class="day-date">Quinta-feira, 13 de Março</div>
+      <div class="day-stamp">🇮🇹 Milão · easyJet · Bairro Nolo</div>
+    </div>
+    <div class="day-chevron">›</div>
   </div>
-  <div class="day-card" onclick="toggleDay(this)">
-    <div class="day-header">
-      <div class="day-header-left">
-        <div class="day-title-row">
-          <div class="day-title">Paris → Milão 2 🇮🇹</div>
-          <div class="day-date">Qui 13/03</div>
-        </div>
-        <div class="day-city-tag chip-m">🇮🇹 Milão · easyJet · Bairro Nolo</div>
-      </div>
-      <div class="day-chevron">›</div>
-    </div>
-    <div class="day-body">
-      <a class="route-btn" href="https://www.google.com/maps/dir/Milan+Malpensa+Airport/Milano+Centrale+Station/Nolo+Milan" target="_blank">🗺️ Ver trajeto completo do dia</a>
-      <div class="ev stay"><div class="ev-row" onclick="toggleEv(event,this.parentElement)"><div class="ev-time">Manhã</div><div class="ev-main"><div class="ev-name">🧳 Checkout Paris</div></div><div class="ev-chevron">›</div></div><div class="ev-detail-wrap"><div class="ev-info">Casa da Ana Luiza</div></div></div>
-      <div class="ev transport"><div class="ev-row" onclick="toggleEv(event,this.parentElement)"><div class="ev-time">13:15</div><div class="ev-main"><div class="ev-name">✈️ easyJet ORY → Milão MXP</div></div><div class="ev-chevron">›</div></div><div class="ev-detail-wrap"><div class="ev-info">EJU3830 · Cód: KBXFSXT · Chega 14:40 · €165 · Assento 6F · 2×23kg</div><a class="map-btn" href="https://www.google.com/maps/dir/Paris+Orly+Airport/Milan+Malpensa+Airport" target="_blank">📍 Ver rota</a></div></div>
-      <div class="ev stay"><div class="ev-row" onclick="toggleEv(event,this.parentElement)"><div class="ev-time">~16:00</div><div class="ev-main"><div class="ev-name">🏠 Check-in Cozy Studio in Nolo</div></div><div class="ev-chevron">›</div></div><div class="ev-detail-wrap"><div class="ev-info">Bairro Nolo · Cód: HMNFY3RKZR · R$1.760,96</div></div></div>
-      <div class="ev food"><div class="ev-row" onclick="toggleEv(event,this.parentElement)"><div class="ev-time">Noite</div><div class="ev-main"><div class="ev-name">🍹 Aperitivo no Nolo</div></div><div class="ev-chevron">›</div></div><div class="ev-detail-wrap"><div class="ev-info">Bairro emergente — bares e restaurantes incríveis</div><a class="map-btn" href="https://www.google.com/maps/search/aperitivo+Nolo+Milan" target="_blank">📍 Ver no mapa</a></div></div>
-    </div>
+  <div class="day-body">
+    <a class="route-btn" href="https://www.google.com/maps/dir/Milan+Malpensa+Airport/Milano+Centrale+Station/Nolo+Milan" target="_blank">🗺️ Trajeto completo do dia</a>
+    <div class="ev stay"><div class="ev-row" onclick="toggleEv(event,this.parentElement)"><div class="ev-time">Manhã</div><div class="ev-main"><div class="ev-name">🧳 Checkout Paris</div></div><div class="ev-chev">›</div></div><div class="ev-detail"><div class="ev-info">Casa da Ana Luiza</div></div></div>
+    <div class="ev transport"><div class="ev-row" onclick="toggleEv(event,this.parentElement)"><div class="ev-time">13:15</div><div class="ev-main"><div class="ev-name">✈️ easyJet ORY → Milão MXP</div></div><div class="ev-chev">›</div></div><div class="ev-detail"><div class="ev-info">EJU3830 · Cód: KBXFSXT · Chega 14:40 · €165 · Assento 6F · 2×23kg</div><a class="map-btn" href="https://www.google.com/maps/dir/Paris+Orly+Airport/Milan+Malpensa+Airport" target="_blank">📍 Ver rota</a></div></div>
+    <div class="ev stay"><div class="ev-row" onclick="toggleEv(event,this.parentElement)"><div class="ev-time">~16:00</div><div class="ev-main"><div class="ev-name">🏠 Check-in Cozy Studio in Nolo</div></div><div class="ev-chev">›</div></div><div class="ev-detail"><div class="ev-info">Bairro Nolo · Cód: HMNFY3RKZR · R$1.760,96</div></div></div>
+    <div class="ev food"><div class="ev-row" onclick="toggleEv(event,this.parentElement)"><div class="ev-time">Noite</div><div class="ev-main"><div class="ev-name">🍹 Aperitivo no Nolo</div></div><div class="ev-chev">›</div></div><div class="ev-detail"><div class="ev-info">Bairro emergente — bares e restaurantes incríveis</div><a class="map-btn" href="https://www.google.com/maps/search/aperitivo+Nolo+Milan" target="_blank">📍 Ver no mapa</a></div></div>
   </div>
 </div>
+</div>
+<div class="tl-dash city-m"></div>
 
-<!-- Dia 14 -->
-<div class="day" data-date="2026-03-14" data-city="milan" data-route="https://www.google.com/maps/dir/Milano+Centrale+Station/Tirano+Italy/Saint+Moritz+Switzerland">
-  <div class="day-line">
-    <div class="day-line-top" style="background:var(--milan)"></div>
-    <div class="day-dot" style="background:var(--milan);color:#fff">14</div>
-    <div class="day-line-bot" style="background:var(--milan)"></div>
+<!-- DIA 14 -->
+<div class="day">
+<div class="day-card city-m" id="day-14" onclick="toggleDay(this)">
+  <div class="day-hdr">
+    <div class="day-num">14</div>
+    <div class="day-info">
+      <div class="day-title">Day Trip St. Moritz ❄️</div>
+      <div class="day-date">Sexta-feira, 14 de Março</div>
+      <div class="day-stamp">🇨🇭 Suíça · Bernina Express</div>
+    </div>
+    <div class="day-chevron">›</div>
   </div>
-  <div class="day-card" onclick="toggleDay(this)">
-    <div class="day-header">
-      <div class="day-header-left">
-        <div class="day-title-row">
-          <div class="day-title">Day Trip St. Moritz ❄️</div>
-          <div class="day-date">Sex 14/03</div>
-        </div>
-        <div class="day-city-tag chip-m">🇨🇭 Suíça · Bernina Express</div>
-      </div>
-      <div class="day-chevron">›</div>
-    </div>
-    <div class="day-body">
-      <a class="route-btn" href="https://www.google.com/maps/dir/Milano+Centrale+Station/Tirano+Italy/Saint+Moritz+Switzerland" target="_blank">🗺️ Ver trajeto completo do dia</a>
-      <div class="ev transport"><div class="ev-row" onclick="toggleEv(event,this.parentElement)"><div class="ev-time">Manhã</div><div class="ev-main"><div class="ev-name">🚆 Bernina Express → St. Moritz</div></div><div class="ev-chevron">›</div></div><div class="ev-detail-wrap"><div class="ev-info">Centrale → Tirano → St. Moritz · ~3h · paisagem de cinema</div><a class="map-btn" href="https://www.google.com/maps/dir/Milano+Centrale/Tirano+Italy/St+Moritz+Switzerland" target="_blank">📍 Ver rota</a></div></div>
-      <div class="ev attraction"><div class="ev-row" onclick="toggleEv(event,this.parentElement)"><div class="ev-time">Dia</div><div class="ev-main"><div class="ev-name">❄️ St. Moritz — neve garantida</div></div><div class="ev-chevron">›</div></div><div class="ev-detail-wrap"><a class="map-btn" href="https://www.google.com/maps/search/St+Moritz+Switzerland" target="_blank">📍 Ver no mapa</a></div></div>
-      <div class="ev food"><div class="ev-row" onclick="toggleEv(event,this.parentElement)"><div class="ev-time">Tarde</div><div class="ev-main"><div class="ev-name">🍫 Chocolate suíço + fondue</div></div><div class="ev-chevron">›</div></div><div class="ev-detail-wrap"><div class="ev-info">Merecido depois de dias de viagem 🧀</div></div></div>
-      <div class="ev transport"><div class="ev-row" onclick="toggleEv(event,this.parentElement)"><div class="ev-time">Noite</div><div class="ev-main"><div class="ev-name">🚆 Volta para Milão</div></div><div class="ev-chevron">›</div></div><div class="ev-detail-wrap"><div class="ev-info">St. Moritz → Tirano → Milano Centrale</div></div></div>
-    </div>
+  <div class="day-body">
+    <a class="route-btn" href="https://www.google.com/maps/dir/Milano+Centrale+Station/Tirano+Italy/Saint+Moritz+Switzerland" target="_blank">🗺️ Trajeto completo do dia</a>
+    <div class="ev transport"><div class="ev-row" onclick="toggleEv(event,this.parentElement)"><div class="ev-time">Manhã</div><div class="ev-main"><div class="ev-name">🚆 Bernina Express → St. Moritz</div></div><div class="ev-chev">›</div></div><div class="ev-detail"><div class="ev-info">Centrale → Tirano → St. Moritz · ~3h · paisagem de cinema</div><a class="map-btn" href="https://www.google.com/maps/dir/Milano+Centrale/Tirano+Italy/St+Moritz+Switzerland" target="_blank">📍 Ver rota</a></div></div>
+    <div class="ev attraction"><div class="ev-row" onclick="toggleEv(event,this.parentElement)"><div class="ev-time">Dia</div><div class="ev-main"><div class="ev-name">❄️ St. Moritz — neve garantida</div></div><div class="ev-chev">›</div></div><div class="ev-detail"><a class="map-btn" href="https://www.google.com/maps/search/St+Moritz+Switzerland" target="_blank">📍 Ver no mapa</a></div></div>
+    <div class="ev food"><div class="ev-row" onclick="toggleEv(event,this.parentElement)"><div class="ev-time">Tarde</div><div class="ev-main"><div class="ev-name">🍫 Chocolate suíço + fondue</div></div><div class="ev-chev">›</div></div><div class="ev-detail"><div class="ev-info">Merecido depois de dias de viagem 🧀</div></div></div>
+    <div class="ev transport"><div class="ev-row" onclick="toggleEv(event,this.parentElement)"><div class="ev-time">Noite</div><div class="ev-main"><div class="ev-name">🚆 Volta para Milão</div></div><div class="ev-chev">›</div></div><div class="ev-detail"><div class="ev-info">St. Moritz → Tirano → Milano Centrale</div></div></div>
   </div>
 </div>
+</div>
+<div class="tl-dash city-m"></div>
 
-<!-- Dia 15 -->
-<div class="day" data-date="2026-03-15" data-city="milan" data-route="https://www.google.com/maps/dir/Navigli+Milan/Corso+Buenos+Aires+Milan/Brera+Milan">
-  <div class="day-line">
-    <div class="day-line-top" style="background:var(--milan)"></div>
-    <div class="day-dot" style="background:var(--milan);color:#fff">15</div>
-    <div class="day-line-bot" style="background:var(--transit)"></div>
+<!-- DIA 15 -->
+<div class="day">
+<div class="day-card city-m" id="day-15" onclick="toggleDay(this)">
+  <div class="day-hdr">
+    <div class="day-num">15</div>
+    <div class="day-info">
+      <div class="day-title">Milão livre 🛍️</div>
+      <div class="day-date">Sábado, 15 de Março</div>
+      <div class="day-stamp">🇮🇹 Milão · Navigli · Brera</div>
+    </div>
+    <div class="day-chevron">›</div>
   </div>
-  <div class="day-card" onclick="toggleDay(this)">
-    <div class="day-header">
-      <div class="day-header-left">
-        <div class="day-title-row">
-          <div class="day-title">Milão livre 🛍️</div>
-          <div class="day-date">Sáb 15/03</div>
-        </div>
-        <div class="day-city-tag chip-m">🇮🇹 Milão · Navigli · Brera</div>
-      </div>
-      <div class="day-chevron">›</div>
-    </div>
-    <div class="day-body">
-      <a class="route-btn" href="https://www.google.com/maps/dir/Navigli+Milan/Corso+Buenos+Aires+Milan/Brera+Milan" target="_blank">🗺️ Ver trajeto completo do dia</a>
-      <div class="ev food"><div class="ev-row" onclick="toggleEv(event,this.parentElement)"><div class="ev-time">Almoço</div><div class="ev-main"><div class="ev-name">🍽️ Navigli — canal de Milão</div></div><div class="ev-chevron">›</div></div><div class="ev-detail-wrap"><a class="map-btn" href="https://www.google.com/maps/search/Navigli+Milan" target="_blank">📍 Ver no mapa</a></div></div>
-      <div class="ev shopping"><div class="ev-row" onclick="toggleEv(event,this.parentElement)"><div class="ev-time">Tarde</div><div class="ev-main"><div class="ev-name">🛍️ Corso Buenos Aires</div></div><div class="ev-chevron">›</div></div><div class="ev-detail-wrap"><div class="ev-info">Maior rua de compras de Milão</div><a class="map-btn" href="https://www.google.com/maps/search/Corso+Buenos+Aires+Milan" target="_blank">📍 Ver no mapa</a></div></div>
-      <div class="ev food"><div class="ev-row" onclick="toggleEv(event,this.parentElement)"><div class="ev-time">Noite</div><div class="ev-main"><div class="ev-name">🥂 Aperitivo em Brera</div></div><div class="ev-chevron">›</div></div><div class="ev-detail-wrap"><div class="ev-info">Último Aperol Spritz italiano</div><a class="map-btn" href="https://www.google.com/maps/search/aperitivo+Brera+Milan" target="_blank">📍 Ver no mapa</a></div></div>
-    </div>
+  <div class="day-body">
+    <a class="route-btn" href="https://www.google.com/maps/dir/Navigli+Milan/Corso+Buenos+Aires+Milan/Brera+Milan" target="_blank">🗺️ Trajeto completo do dia</a>
+    <div class="ev food"><div class="ev-row" onclick="toggleEv(event,this.parentElement)"><div class="ev-time">Almoço</div><div class="ev-main"><div class="ev-name">🍽️ Navigli — canal de Milão</div></div><div class="ev-chev">›</div></div><div class="ev-detail"><a class="map-btn" href="https://www.google.com/maps/search/Navigli+Milan" target="_blank">📍 Ver no mapa</a></div></div>
+    <div class="ev shopping"><div class="ev-row" onclick="toggleEv(event,this.parentElement)"><div class="ev-time">Tarde</div><div class="ev-main"><div class="ev-name">🛍️ Corso Buenos Aires</div></div><div class="ev-chev">›</div></div><div class="ev-detail"><div class="ev-info">Maior rua de compras de Milão</div><a class="map-btn" href="https://www.google.com/maps/search/Corso+Buenos+Aires+Milan" target="_blank">📍 Ver no mapa</a></div></div>
+    <div class="ev food"><div class="ev-row" onclick="toggleEv(event,this.parentElement)"><div class="ev-time">Noite</div><div class="ev-main"><div class="ev-name">🥂 Aperitivo em Brera</div></div><div class="ev-chev">›</div></div><div class="ev-detail"><div class="ev-info">Último Aperol Spritz italiano 🍊</div><a class="map-btn" href="https://www.google.com/maps/search/aperitivo+Brera+Milan" target="_blank">📍 Ver no mapa</a></div></div>
   </div>
 </div>
+</div>
+<div class="tl-dash city-t"></div>
 
-<!-- Dia 16 -->
-<div class="day" data-date="2026-03-16" data-city="transit" data-route="https://www.google.com/maps/dir/Nolo+Milan/Milan+Malpensa+Airport">
-  <div class="day-line">
-    <div class="day-line-top" style="background:var(--transit)"></div>
-    <div class="day-dot" style="background:var(--transit);color:#fff">16</div>
-    <div class="day-line-bot" style="background:transparent"></div>
+<!-- DIA 16 -->
+<div class="day" style="padding-bottom:16px">
+<div class="day-card city-t" id="day-16" onclick="toggleDay(this)">
+  <div class="day-hdr">
+    <div class="day-num">16</div>
+    <div class="day-info">
+      <div class="day-title">Volta para casa 🏡</div>
+      <div class="day-date">Domingo, 16 de Março</div>
+      <div class="day-stamp">✈ MXP → GRU → CNF</div>
+    </div>
+    <div class="day-chevron">›</div>
   </div>
-  <div class="day-card" onclick="toggleDay(this)">
-    <div class="day-header">
-      <div class="day-header-left">
-        <div class="day-title-row">
-          <div class="day-title">Volta para casa 🏡</div>
-          <div class="day-date">Dom 16/03</div>
-        </div>
-        <div class="day-city-tag chip-t">✈️ MXP → GRU → CNF</div>
-      </div>
-      <div class="day-chevron">›</div>
-    </div>
-    <div class="day-body">
-      <a class="route-btn" href="https://www.google.com/maps/dir/Nolo+Milan/Milan+Malpensa+Airport" target="_blank">🗺️ Ver trajeto completo do dia</a>
-      <div class="ev stay"><div class="ev-row" onclick="toggleEv(event,this.parentElement)"><div class="ev-time">Manhã</div><div class="ev-main"><div class="ev-name">🧳 Checkout Milão 2</div></div><div class="ev-chevron">›</div></div><div class="ev-detail-wrap"><div class="ev-info">Cozy Studio Nolo · Cód: HMNFY3RKZR</div></div></div>
-      <div class="ev transport"><div class="ev-row" onclick="toggleEv(event,this.parentElement)"><div class="ev-time">Manhã</div><div class="ev-main"><div class="ev-name">🚆 Transfer Nolo → Malpensa</div></div><div class="ev-chevron">›</div></div><div class="ev-detail-wrap"><a class="map-btn" href="https://www.google.com/maps/dir/Nolo+Milan/Milan+Malpensa+Airport" target="_blank">📍 Ver trajeto</a></div></div>
-      <div class="ev transport"><div class="ev-row" onclick="toggleEv(event,this.parentElement)"><div class="ev-time">12:00</div><div class="ev-main"><div class="ev-name">✈️ LA8073: MXP → GRU</div></div><div class="ev-chevron">›</div></div><div class="ev-detail-wrap"><div class="ev-info">Cód: UMWVRD</div></div></div>
-      <div class="ev transport"><div class="ev-row" onclick="toggleEv(event,this.parentElement)"><div class="ev-time">Noite</div><div class="ev-main"><div class="ev-name">✈️ LA4544: GRU → CNF</div></div><div class="ev-chevron">›</div></div><div class="ev-detail-wrap"><div class="ev-info">Chegada em Confins · Cód: UMWVRD 🏠</div></div></div>
-    </div>
+  <div class="day-body">
+    <a class="route-btn" href="https://www.google.com/maps/dir/Nolo+Milan/Milan+Malpensa+Airport" target="_blank">🗺️ Trajeto completo do dia</a>
+    <div class="ev stay"><div class="ev-row" onclick="toggleEv(event,this.parentElement)"><div class="ev-time">Manhã</div><div class="ev-main"><div class="ev-name">🧳 Checkout Milão 2</div></div><div class="ev-chev">›</div></div><div class="ev-detail"><div class="ev-info">Cozy Studio Nolo · Cód: HMNFY3RKZR</div></div></div>
+    <div class="ev transport"><div class="ev-row" onclick="toggleEv(event,this.parentElement)"><div class="ev-time">Manhã</div><div class="ev-main"><div class="ev-name">🚆 Transfer Nolo → Malpensa</div></div><div class="ev-chev">›</div></div><div class="ev-detail"><a class="map-btn" href="https://www.google.com/maps/dir/Nolo+Milan/Milan+Malpensa+Airport" target="_blank">📍 Ver trajeto</a></div></div>
+    <div class="ev transport"><div class="ev-row" onclick="toggleEv(event,this.parentElement)"><div class="ev-time">12:00</div><div class="ev-main"><div class="ev-name">✈️ LA8073: MXP → GRU</div></div><div class="ev-chev">›</div></div><div class="ev-detail"><div class="ev-info">Cód: UMWVRD</div></div></div>
+    <div class="ev transport"><div class="ev-row" onclick="toggleEv(event,this.parentElement)"><div class="ev-time">Noite</div><div class="ev-main"><div class="ev-name">✈️ LA4544: GRU → CNF</div></div><div class="ev-chev">›</div></div><div class="ev-detail"><div class="ev-info">Chegada em Confins · Cód: UMWVRD 🏠</div></div></div>
   </div>
 </div>
+</div>
 
-</div><!-- /timeline -->
 </div><!-- /panel-timeline -->
 
 <!-- ════ CÓDIGOS ════ -->
 <div class="panel" id="panel-codes">
 <div class="codes-wrap">
-  <div class="code-section">
-    <div class="code-section-title">✈️ Voos</div>
-    <div class="code-card">
-      <div class="code-row"><span class="code-label">LATAM (todos os voos)</span><span class="code-val" onclick="copyCode(this)">UMWVRD</span></div>
-      <div class="code-row"><span class="code-label">LATAM Localizador</span><span class="code-val" onclick="copyCode(this)">LA9577689BDIC</span></div>
-      <div class="code-row"><span class="code-label">Transavia FCO→ORY</span><span class="code-val" onclick="copyCode(this)">QE75XJ</span></div>
-      <div class="code-row"><span class="code-label">easyJet ORY→MXP</span><span class="code-val" onclick="copyCode(this)">KBXFSXT</span></div>
-      <div class="code-row"><span class="code-label">easyJet Voo</span><span class="code-val" onclick="copyCode(this)">EJU3830</span></div>
-      <div class="code-row"><span class="code-label">easyJet Assento</span><span class="code-val" onclick="copyCode(this)">6F · 2×23kg</span></div>
-    </div>
+  <div class="sec-title" style="margin-bottom:12px">✈️ Voos</div>
+  <div class="code-card">
+    <div class="code-row"><span class="code-lbl">LATAM (todos os voos)</span><span class="code-val" onclick="copyCode(this)">UMWVRD</span></div>
+    <div class="code-row"><span class="code-lbl">LATAM Localizador</span><span class="code-val" onclick="copyCode(this)">LA9577689BDIC</span></div>
+    <div class="code-row"><span class="code-lbl">Transavia FCO→ORY</span><span class="code-val" onclick="copyCode(this)">QE75XJ</span></div>
+    <div class="code-row"><span class="code-lbl">easyJet ORY→MXP</span><span class="code-val" onclick="copyCode(this)">KBXFSXT</span></div>
+    <div class="code-row"><span class="code-lbl">easyJet Voo</span><span class="code-val" onclick="copyCode(this)">EJU3830</span></div>
+    <div class="code-row"><span class="code-lbl">easyJet Assento</span><span class="code-val" onclick="copyCode(this)">6F · 2×23kg</span></div>
   </div>
-  <div class="code-section">
-    <div class="code-section-title">🏠 Hospedagem</div>
-    <div class="code-card">
-      <div class="code-row"><span class="code-label">Milão 1 (Vikey)</span><span class="code-val" onclick="copyCode(this)">PHEB7ABY</span></div>
-      <div class="code-row"><span class="code-label">Milão 2</span><span class="code-val" onclick="copyCode(this)">HMNFY3RKZR</span></div>
-      <div class="code-row"><span class="code-label">Disneyland</span><span class="code-val" onclick="copyCode(this)">32991570</span></div>
-    </div>
+  <div class="sec-title" style="margin:16px 0 12px">🏠 Hospedagem</div>
+  <div class="code-card">
+    <div class="code-row"><span class="code-lbl">Milão 1 (Vikey)</span><span class="code-val" onclick="copyCode(this)">PHEB7ABY</span></div>
+    <div class="code-row"><span class="code-lbl">Milão 2</span><span class="code-val" onclick="copyCode(this)">HMNFY3RKZR</span></div>
+    <div class="code-row"><span class="code-lbl">Disneyland</span><span class="code-val" onclick="copyCode(this)">32991570</span></div>
   </div>
-  <div class="code-section">
-    <div class="code-section-title">🛂 Passageiros</div>
-    <div class="code-card">
-      <div class="code-row"><span class="code-label">Leandro Lemos</span><span class="code-val" onclick="copyCode(this)">GF497058</span></div>
-      <div class="code-row"><span class="code-label">Gabriela Gomide</span><span class="code-val" onclick="copyCode(this)">GG827112</span></div>
-    </div>
+  <div class="sec-title" style="margin:16px 0 12px">🛂 Passageiros</div>
+  <div class="code-card">
+    <div class="code-row"><span class="code-lbl">Leandro Lemos</span><span class="code-val" onclick="copyCode(this)">GF497058</span></div>
+    <div class="code-row"><span class="code-lbl">Gabriela Gomide</span><span class="code-val" onclick="copyCode(this)">GG827112</span></div>
   </div>
-  <div class="code-section">
-    <div class="code-section-title">✈️ Voos Detalhados</div>
-    <div class="code-card">
-      <div class="flight-row"><span class="fl-date">01/03</span><div class="fl-info"><div class="fl-route">CNF → CGH → GRU</div><div class="fl-time">11:05 LA3039 · 18:00 LA8072</div><div class="fl-code">UMWVRD</div></div></div>
-      <div class="flight-row"><span class="fl-date">02/03</span><div class="fl-info"><div class="fl-route">→ MXP Malpensa</div><div class="fl-time">Chega 09:15</div></div></div>
-      <div class="flight-row"><span class="fl-date">09/03</span><div class="fl-info"><div class="fl-route">FCO → Paris Orly</div><div class="fl-time">12:10 → 14:25 · Transavia</div><div class="fl-code">QE75XJ · €162</div></div></div>
-      <div class="flight-row"><span class="fl-date">13/03</span><div class="fl-info"><div class="fl-route">Orly → MXP Malpensa</div><div class="fl-time">13:15 → 14:40 · easyJet</div><div class="fl-code">KBXFSXT · €165</div></div></div>
-      <div class="flight-row"><span class="fl-date">16/03</span><div class="fl-info"><div class="fl-route">MXP → GRU → CNF</div><div class="fl-time">12:00 LA8073 · noite LA4544</div><div class="fl-code">UMWVRD</div></div></div>
-    </div>
+  <div class="sec-title" style="margin:16px 0 12px">✈️ Voos Detalhados</div>
+  <div class="code-card">
+    <div class="fl-row"><span class="fl-date">01/03</span><div><div class="fl-route">CNF → CGH → GRU</div><div class="fl-time">11:05 LA3039 · 18:00 LA8072</div><div class="fl-code">UMWVRD</div></div></div>
+    <div class="fl-row"><span class="fl-date">02/03</span><div><div class="fl-route">→ MXP Malpensa</div><div class="fl-time">Chega 09:15</div></div></div>
+    <div class="fl-row"><span class="fl-date">09/03</span><div><div class="fl-route">FCO → Paris Orly</div><div class="fl-time">12:10 → 14:25 · Transavia</div><div class="fl-code">QE75XJ · €162</div></div></div>
+    <div class="fl-row"><span class="fl-date">13/03</span><div><div class="fl-route">Orly → MXP Malpensa</div><div class="fl-time">13:15 → 14:40 · easyJet</div><div class="fl-code">KBXFSXT · €165</div></div></div>
+    <div class="fl-row" style="border-bottom:none"><span class="fl-date">16/03</span><div><div class="fl-route">MXP → GRU → CNF</div><div class="fl-time">12:00 LA8073 · noite LA4544</div><div class="fl-code">UMWVRD</div></div></div>
   </div>
 </div>
 </div>
@@ -879,53 +821,38 @@ body{
 <div class="panel" id="panel-stays">
 <div class="stays-wrap">
   <div class="stay-card">
-    <div class="stay-hdr">
-      <div class="stay-icon" style="background:rgba(59,130,246,.15)">🏠</div>
-      <div><div class="stay-name">Smart Central Loft</div><div class="stay-dates">02–04 Mar · Milão 1</div></div>
-    </div>
-    <div class="stay-row"><span class="stay-lbl">Endereço</span><span class="stay-val">Via Copernico 49, Milão</span></div>
-    <div class="stay-row"><span class="stay-lbl">Anfitrião</span><span class="stay-val">Claudio</span></div>
-    <div class="stay-row"><span class="stay-lbl">Check-in</span><span class="stay-val">A partir das <span class="hl">14:00</span> (quarto pronto às 16:00)</span></div>
-    <div class="stay-row"><span class="stay-lbl">Checkout</span><span class="stay-val">Antes das <span class="hl">10:00</span></span></div>
-    <div class="stay-row"><span class="stay-lbl">Acesso</span><span class="stay-val">Armário de chaves automático</span></div>
-    <div class="stay-row"><span class="stay-lbl">Vikey</span><span class="stay-val"><span class="hl">PHEB7ABY</span> · guest.vikey.it/checkin/PHEB7ABY</span></div>
-    <div class="stay-row"><span class="stay-lbl">Silêncio</span><span class="stay-val">22h – 8h</span></div>
-    <div class="stay-row"><span class="stay-lbl">Valor</span><span class="stay-val">R$1.067,66 · 2 noites</span></div>
+    <div class="stay-hdr"><div class="stay-icon" style="background:rgba(29,109,181,.12)">🏠</div><div><div class="stay-name">Smart Central Loft</div><div class="stay-dates">02–04 Mar · Milão 1</div></div></div>
+    <div class="stay-row"><span class="s-lbl">Endereço</span><span class="s-val">Via Copernico 49, Milão</span></div>
+    <div class="stay-row"><span class="s-lbl">Anfitrião</span><span class="s-val">Claudio</span></div>
+    <div class="stay-row"><span class="s-lbl">Check-in</span><span class="s-val">A partir das <span class="hl">14:00</span> (quarto às 16:00)</span></div>
+    <div class="stay-row"><span class="s-lbl">Checkout</span><span class="s-val">Antes das <span class="hl">10:00</span></span></div>
+    <div class="stay-row"><span class="s-lbl">Acesso</span><span class="s-val">Armário de chaves automático</span></div>
+    <div class="stay-row"><span class="s-lbl">Vikey</span><span class="s-val"><span class="hl">PHEB7ABY</span> · guest.vikey.it/checkin/PHEB7ABY</span></div>
+    <div class="stay-row"><span class="s-lbl">Silêncio</span><span class="s-val">22h – 8h</span></div>
+    <div class="stay-row"><span class="s-lbl">Valor</span><span class="s-val">R$1.067,66 · 2 noites</span></div>
   </div>
   <div class="stay-card">
-    <div class="stay-hdr">
-      <div class="stay-icon" style="background:rgba(249,115,22,.15)">🏠</div>
-      <div><div class="stay-name">San Frediano Boutique Nº9</div><div class="stay-dates">04–06 Mar · Florença</div></div>
-    </div>
-    <div class="stay-row"><span class="stay-lbl">Bairro</span><span class="stay-val">San Frediano, Florença</span></div>
-    <div class="stay-row"><span class="stay-lbl">Checkout</span><span class="stay-val">Antes das <span class="hl">10:00</span></span></div>
-    <div class="stay-row"><span class="stay-lbl">Valor</span><span class="stay-val">R$816,44 · 2 noites</span></div>
+    <div class="stay-hdr"><div class="stay-icon" style="background:rgba(196,91,10,.12)">🏠</div><div><div class="stay-name">San Frediano Boutique Nº9</div><div class="stay-dates">04–06 Mar · Florença</div></div></div>
+    <div class="stay-row"><span class="s-lbl">Bairro</span><span class="s-val">San Frediano, Florença</span></div>
+    <div class="stay-row"><span class="s-lbl">Checkout</span><span class="s-val">Antes das <span class="hl">10:00</span></span></div>
+    <div class="stay-row"><span class="s-lbl">Valor</span><span class="s-val">R$816,44 · 2 noites</span></div>
   </div>
   <div class="stay-card">
-    <div class="stay-hdr">
-      <div class="stay-icon" style="background:rgba(239,68,68,.15)">🏠</div>
-      <div><div class="stay-name">Camera c/ bagno e giardino</div><div class="stay-dates">06–09 Mar · Roma</div></div>
-    </div>
-    <div class="stay-row"><span class="stay-lbl">Checkout</span><span class="stay-val">Antes das <span class="hl">10:00</span> (voo 12:10)</span></div>
-    <div class="stay-row"><span class="stay-lbl">Valor</span><span class="stay-val">R$1.356,09 · 3 noites</span></div>
+    <div class="stay-hdr"><div class="stay-icon" style="background:rgba(185,28,28,.12)">🏠</div><div><div class="stay-name">Camera c/ bagno e giardino</div><div class="stay-dates">06–09 Mar · Roma</div></div></div>
+    <div class="stay-row"><span class="s-lbl">Checkout</span><span class="s-val">Antes das <span class="hl">10:00</span> (voo 12:10)</span></div>
+    <div class="stay-row"><span class="s-lbl">Valor</span><span class="s-val">R$1.356,09 · 3 noites</span></div>
   </div>
   <div class="stay-card">
-    <div class="stay-hdr">
-      <div class="stay-icon" style="background:rgba(236,72,153,.15)">🏠</div>
-      <div><div class="stay-name">Casa da Ana Luiza</div><div class="stay-dates">09–13 Mar · Paris</div></div>
-    </div>
-    <div class="stay-row"><span class="stay-lbl">Host</span><span class="stay-val">Mãe do Lorenzo (amigo de infância do Leco)</span></div>
-    <div class="stay-row"><span class="stay-lbl">Checkout</span><span class="stay-val">Antes das <span class="hl">13:00</span> (voo 13:15)</span></div>
+    <div class="stay-hdr"><div class="stay-icon" style="background:rgba(157,23,77,.12)">🏠</div><div><div class="stay-name">Casa da Ana Luiza</div><div class="stay-dates">09–13 Mar · Paris</div></div></div>
+    <div class="stay-row"><span class="s-lbl">Host</span><span class="s-val">Mãe do Lorenzo (amigo de infância do Leco)</span></div>
+    <div class="stay-row"><span class="s-lbl">Checkout</span><span class="s-val">Antes das <span class="hl">13:00</span> (voo 13:15)</span></div>
   </div>
   <div class="stay-card">
-    <div class="stay-hdr">
-      <div class="stay-icon" style="background:rgba(59,130,246,.15)">🏠</div>
-      <div><div class="stay-name">Cozy Studio in Nolo</div><div class="stay-dates">13–16 Mar · Milão 2</div></div>
-    </div>
-    <div class="stay-row"><span class="stay-lbl">Bairro</span><span class="stay-val">Nolo, Milão</span></div>
-    <div class="stay-row"><span class="stay-lbl">Código</span><span class="stay-val"><span class="hl">HMNFY3RKZR</span></span></div>
-    <div class="stay-row"><span class="stay-lbl">Checkout</span><span class="stay-val">Antes das <span class="hl">10:00</span></span></div>
-    <div class="stay-row"><span class="stay-lbl">Valor</span><span class="stay-val">R$1.760,96 · 3 noites</span></div>
+    <div class="stay-hdr"><div class="stay-icon" style="background:rgba(29,109,181,.12)">🏠</div><div><div class="stay-name">Cozy Studio in Nolo</div><div class="stay-dates">13–16 Mar · Milão 2</div></div></div>
+    <div class="stay-row"><span class="s-lbl">Bairro</span><span class="s-val">Nolo, Milão</span></div>
+    <div class="stay-row"><span class="s-lbl">Código</span><span class="s-val"><span class="hl">HMNFY3RKZR</span></span></div>
+    <div class="stay-row"><span class="s-lbl">Checkout</span><span class="s-val">Antes das <span class="hl">10:00</span></span></div>
+    <div class="stay-row"><span class="s-lbl">Valor</span><span class="s-val">R$1.760,96 · 3 noites</span></div>
   </div>
 </div>
 </div>
@@ -933,15 +860,15 @@ body{
 <!-- ════ CHECKLIST ════ -->
 <div class="panel" id="panel-checklist">
 <div class="cl-wrap">
-  <div class="cl-section">
-    <div class="cl-title">🚨 Urgente — Pré-viagem</div>
+  <div class="cl-group">
+    <div class="cl-grp-title">🚨 Urgente</div>
     <div class="cl-item" onclick="toggleCheck(this)"><div class="cl-box">✓</div><span class="cl-text">Check-in online Vikey — PHEB7ABY (obrigatório por lei)</span></div>
     <div class="cl-item" onclick="toggleCheck(this)"><div class="cl-box">✓</div><span class="cl-text">Reservar ingressos Coliseu + Vaticano (esgota!)</span></div>
     <div class="cl-item" onclick="toggleCheck(this)"><div class="cl-box">✓</div><span class="cl-text">Reservar ingressos Uffizi, Florença (esgota!)</span></div>
     <div class="cl-item" onclick="toggleCheck(this)"><div class="cl-box">✓</div><span class="cl-text">Comprar passagem Bernina Express (Tirano→St. Moritz)</span></div>
   </div>
-  <div class="cl-section">
-    <div class="cl-title">📋 Geral</div>
+  <div class="cl-group">
+    <div class="cl-grp-title">📋 Geral</div>
     <div class="cl-item" onclick="toggleCheck(this)"><div class="cl-box">✓</div><span class="cl-text">Check-in LATAM online (disponível 28/02)</span></div>
     <div class="cl-item" onclick="toggleCheck(this)"><div class="cl-box">✓</div><span class="cl-text">Comprar ônibus Terravision Malpensa → Centrale (~€5–8)</span></div>
     <div class="cl-item" onclick="toggleCheck(this)"><div class="cl-box">✓</div><span class="cl-text">Comprar trens Milão→Florença e Florença→Roma</span></div>
@@ -950,10 +877,9 @@ body{
     <div class="cl-item" onclick="toggleCheck(this)"><div class="cl-box">✓</div><span class="cl-text">Baixar mapas offline das 5 cidades (Google Maps)</span></div>
     <div class="cl-item" onclick="toggleCheck(this)"><div class="cl-box">✓</div><span class="cl-text">Adaptador elétrico (EU Type C)</span></div>
     <div class="cl-item" onclick="toggleCheck(this)"><div class="cl-box">✓</div><span class="cl-text">Checar franquia easyJet (2×23kg ✅)</span></div>
-    <div class="cl-item" onclick="toggleCheck(this)"><div class="cl-box">✓</div><span class="cl-text">Mensagem ao Claudio sobre deixar malas às 11–12h</span></div>
   </div>
-  <div class="cl-section">
-    <div class="cl-title">🗺️ Durante a viagem</div>
+  <div class="cl-group">
+    <div class="cl-grp-title">🗺️ Durante a viagem</div>
     <div class="cl-item" onclick="toggleCheck(this)"><div class="cl-box">✓</div><span class="cl-text">Checkout Milão 1 antes das 10h (04/03)</span></div>
     <div class="cl-item" onclick="toggleCheck(this)"><div class="cl-box">✓</div><span class="cl-text">Checkout Florença antes das 10h (06/03)</span></div>
     <div class="cl-item" onclick="toggleCheck(this)"><div class="cl-box">✓</div><span class="cl-text">Checkout Roma + ir pro FCO (09/03 · voo 12:10)</span></div>
@@ -967,168 +893,117 @@ body{
 <div class="panel" id="panel-food">
 <div class="food-wrap">
   <div class="food-city-hdr milan">🇮🇹 Milão <small>02–04 / 13–16 Mar</small></div>
-  <div class="resto-card"><div class="resto-top"><div class="resto-name">Al Cantinone</div><div class="resto-dish">🥩 Cotoletta alla Milanese</div><div class="resto-tags"><span class="rtag rtag-day">Dia 2 ou 4 · jantar</span><span class="rtag rtag-must">⭐ Imperdível</span><span class="rtag rtag-price">€€</span></div></div><div class="resto-body"><div class="resto-tip">Ambiente rústico histórico. Cotoletta de vitela com tempero secreto — crocante, fina, do tamanho do prato. Combo obrigatório: peça junto com o Risoto alla Milanese (açafrão).</div><a class="resto-map" href="https://www.google.com/maps/search/Al+Cantinone+Milan" target="_blank">📍 Ver no Maps</a></div></div>
-  <div class="resto-card"><div class="resto-top"><div class="resto-name">Osteria Angelino dal 1899</div><div class="resto-dish">🥩 Cotoletta + Risoto Milanês</div><div class="resto-tags"><span class="rtag rtag-day">Dia 2 · jantar</span><span class="rtag rtag-price">€€</span></div></div><div class="resto-body"><div class="resto-tip">Desde 1899. Muito falada por locals. Milanesa fina e crocante coberta com molho de tomate fresco e parmesão. Atmosfera tradicional, menos turística.</div><a class="resto-map" href="https://www.google.com/maps/search/Osteria+Angelino+1899+Milan" target="_blank">📍 Ver no Maps</a></div></div>
-  <div class="resto-card"><div class="resto-top"><div class="resto-name">Sorbillo</div><div class="resto-dish">🍕 Pizza napoletana</div><div class="resto-tags"><span class="rtag rtag-day">Dia 3 ou 15 · jantar</span><span class="rtag rtag-must">⭐ Viral TikTok</span><span class="rtag rtag-price">€€</span></div></div><div class="resto-body"><div class="resto-tip">A pizzaria mais famosa de Nápoles abriu filial em Milão. Reconhecida pelo Gambero Rosso. Massa leve, bordas altas. Chegar cedo ou reservar.</div><a class="resto-map" href="https://www.google.com/maps/search/Sorbillo+pizza+Milan" target="_blank">📍 Ver no Maps</a></div></div>
+  <div class="resto-card"><div class="resto-top"><div class="resto-name">Al Cantinone</div><div class="resto-dish">🥩 Cotoletta alla Milanese</div><div class="resto-tags"><span class="rtag rtag-day">Dia 2 ou 4 · jantar</span><span class="rtag rtag-must">⭐ Imperdível</span><span class="rtag rtag-€">€€</span></div></div><div class="resto-body"><div class="resto-tip">Ambiente rústico histórico. Cotoletta de vitela com tempero secreto — crocante, fina, do tamanho do prato. Pede junto com o Risoto alla Milanese (açafrão).</div><a class="resto-map" href="https://www.google.com/maps/search/Al+Cantinone+Milan" target="_blank">📍 Ver no Maps</a></div></div>
+  <div class="resto-card"><div class="resto-top"><div class="resto-name">Osteria Angelino dal 1899</div><div class="resto-dish">🥩 Cotoletta + Risoto Milanês</div><div class="resto-tags"><span class="rtag rtag-day">Dia 2 · jantar</span><span class="rtag rtag-€">€€</span></div></div><div class="resto-body"><div class="resto-tip">Desde 1899. Muito falada por locals. Milanesa fina e crocante com molho de tomate fresco e parmesão. Menos turística que os concorrentes.</div><a class="resto-map" href="https://www.google.com/maps/search/Osteria+Angelino+1899+Milan" target="_blank">📍 Ver no Maps</a></div></div>
+  <div class="resto-card"><div class="resto-top"><div class="resto-name">Sorbillo</div><div class="resto-dish">🍕 Pizza napoletana</div><div class="resto-tags"><span class="rtag rtag-day">Dia 3 ou 15 · jantar</span><span class="rtag rtag-must">⭐ Viral TikTok</span><span class="rtag rtag-€">€€</span></div></div><div class="resto-body"><div class="resto-tip">A pizzaria mais famosa de Nápoles abriu filial em Milão. Massa leve, bordas altas. Reconhecida pelo Gambero Rosso. Chegar cedo ou reservar.</div><a class="resto-map" href="https://www.google.com/maps/search/Sorbillo+pizza+Milan" target="_blank">📍 Ver no Maps</a></div></div>
 
   <div class="food-city-hdr florence">🇮🇹 Florença <small>04–06 Mar</small></div>
-  <div class="resto-card"><div class="resto-top"><div class="resto-name">Trattoria Mario</div><div class="resto-dish">🥩 Bistecca alla Fiorentina</div><div class="resto-tags"><span class="rtag rtag-day">Dia 5 · almoço</span><span class="rtag rtag-must">⭐ Imperdível</span><span class="rtag rtag-free">Sem reserva</span><span class="rtag rtag-price">€€</span></div></div><div class="resto-body"><div class="resto-tip">Icônico desde 1953. Mesa compartilhada — faz parte do charme. Sem reserva: chegar antes das 12h. Pede mínimo 600g na bistecca, ao ponto ou malpassado.</div><a class="resto-map" href="https://www.google.com/maps/search/Trattoria+Mario+Florence" target="_blank">📍 Ver no Maps</a></div></div>
-  <div class="resto-card"><div class="resto-top"><div class="resto-name">Mercato Centrale — Lampredotto</div><div class="resto-dish">🥪 Lampredotto (street food)</div><div class="resto-tags"><span class="rtag rtag-day">Dia 5 · almoço</span><span class="rtag rtag-price">€</span></div></div><div class="resto-body"><div class="resto-tip">O street food mais típico de Florença — sanduíche de miolo de boi cozido. Divide opiniões, mas é a experiência mais local possível. O Mercato Centrale em si já vale a visita.</div><a class="resto-map" href="https://www.google.com/maps/search/Mercato+Centrale+Firenze" target="_blank">📍 Ver no Maps</a></div></div>
-  <div class="resto-card"><div class="resto-top"><div class="resto-name">Trattoria 4 Leoni</div><div class="resto-dish">🍝 Cozinha toscana clássica</div><div class="resto-tags"><span class="rtag rtag-day">Dia 4 · jantar ao chegar</span><span class="rtag rtag-price">€€</span></div></div><div class="resto-body"><div class="resto-tip">Piazza della Passera, pertinho do Palazzo Pitti. Ambiente aconchegante, cozinha toscana autêntica. Reserva recomendada.</div><a class="resto-map" href="https://www.google.com/maps/search/Trattoria+4+Leoni+Firenze" target="_blank">📍 Ver no Maps</a></div></div>
+  <div class="resto-card"><div class="resto-top"><div class="resto-name">Trattoria Mario</div><div class="resto-dish">🥩 Bistecca alla Fiorentina</div><div class="resto-tags"><span class="rtag rtag-day">Dia 5 · almoço</span><span class="rtag rtag-must">⭐ Imperdível</span><span class="rtag rtag-free">Sem reserva</span><span class="rtag rtag-€">€€</span></div></div><div class="resto-body"><div class="resto-tip">Icônico desde 1953. Mesa compartilhada — faz parte do charme. Sem reserva: chegar antes das 12h. Mínimo 600g, ao ponto ou malpassado.</div><a class="resto-map" href="https://www.google.com/maps/search/Trattoria+Mario+Florence" target="_blank">📍 Ver no Maps</a></div></div>
+  <div class="resto-card"><div class="resto-top"><div class="resto-name">Mercato Centrale</div><div class="resto-dish">🥪 Lampredotto (street food)</div><div class="resto-tags"><span class="rtag rtag-day">Dia 5 · almoço</span><span class="rtag rtag-€">€</span></div></div><div class="resto-body"><div class="resto-tip">O street food mais típico de Florença — sanduíche de miolo de boi cozido. Divide opiniões, mas é a experiência mais local possível.</div><a class="resto-map" href="https://www.google.com/maps/search/Mercato+Centrale+Firenze" target="_blank">📍 Ver no Maps</a></div></div>
+  <div class="resto-card"><div class="resto-top"><div class="resto-name">Trattoria 4 Leoni</div><div class="resto-dish">🍝 Cozinha toscana clássica</div><div class="resto-tags"><span class="rtag rtag-day">Dia 4 · jantar ao chegar</span><span class="rtag rtag-€">€€</span></div></div><div class="resto-body"><div class="resto-tip">Piazza della Passera, perto do Palazzo Pitti. Ambiente aconchegante, cozinha toscana autêntica. Reserva recomendada.</div><a class="resto-map" href="https://www.google.com/maps/search/Trattoria+4+Leoni+Firenze" target="_blank">📍 Ver no Maps</a></div></div>
 
   <div class="food-city-hdr rome">🇮🇹 Roma <small>06–09 Mar</small></div>
-  <div class="resto-card"><div class="resto-top"><div class="resto-name">Felice a Testaccio</div><div class="resto-dish">🍝 Cacio e Pepe</div><div class="resto-tags"><span class="rtag rtag-day">Dia 7 · jantar</span><span class="rtag rtag-must">⭐ Imperdível</span><span class="rtag rtag-res">⚠️ Reserva obrigatória</span><span class="rtag rtag-price">€€€</span></div></div><div class="resto-body"><div class="resto-tip">O cacio e pepe mais falado de Roma. 200g de tonnarelli, pecorino, parmigiano e pimenta. Esgota semanas antes: reservar agora via site ou telefone.</div><a class="resto-map" href="https://www.google.com/maps/search/Felice+a+Testaccio+Roma" target="_blank">📍 Ver no Maps</a></div></div>
-  <div class="resto-card"><div class="resto-top"><div class="resto-name">Hostaria al Gladiatore</div><div class="resto-dish">🍝 Rigatoni alla Coda + Cacio e Pepe</div><div class="resto-tags"><span class="rtag rtag-day">Dia 7 · almoço (pós-Coliseu)</span><span class="rtag rtag-price">€€</span></div></div><div class="resto-body"><div class="resto-tip">Pertinho do Coliseu, mas sem cilada de turista. Comida caseira romana de verdade. O rigatoni alla coda (rabada desfiada) é o prato menos famoso mas mais gostoso.</div><a class="resto-map" href="https://www.google.com/maps/search/Hostaria+al+Gladiatore+Roma" target="_blank">📍 Ver no Maps</a></div></div>
-  <div class="resto-card"><div class="resto-top"><div class="resto-name">Tonnarello</div><div class="resto-dish">🍝 Carbonara + Amatriciana</div><div class="resto-tags"><span class="rtag rtag-day">Dia 8 · jantar em Trastevere</span><span class="rtag rtag-must">⭐ Viral</span><span class="rtag rtag-free">Sem reserva</span><span class="rtag rtag-price">€€</span></div></div><div class="resto-body"><div class="resto-tip">No Trastevere — o bairro mais bonito de Roma à noite. Fila na porta mas vale. Turístico sim, pasta boa. Combina com passeio pelas ruelas depois.</div><a class="resto-map" href="https://www.google.com/maps/search/Tonnarello+Trastevere+Roma" target="_blank">📍 Ver no Maps</a></div></div>
+  <div class="resto-card"><div class="resto-top"><div class="resto-name">Felice a Testaccio</div><div class="resto-dish">🍝 Cacio e Pepe</div><div class="resto-tags"><span class="rtag rtag-day">Dia 7 · jantar</span><span class="rtag rtag-must">⭐ Imperdível</span><span class="rtag rtag-res">⚠️ Reserva obrigatória</span><span class="rtag rtag-€">€€€</span></div></div><div class="resto-body"><div class="resto-tip">O cacio e pepe mais falado de Roma. 200g de tonnarelli, pecorino, parmigiano e pimenta. Esgota semanas antes: reservar agora.</div><a class="resto-map" href="https://www.google.com/maps/search/Felice+a+Testaccio+Roma" target="_blank">📍 Ver no Maps</a></div></div>
+  <div class="resto-card"><div class="resto-top"><div class="resto-name">Hostaria al Gladiatore</div><div class="resto-dish">🍝 Rigatoni alla Coda + Cacio e Pepe</div><div class="resto-tags"><span class="rtag rtag-day">Dia 7 · almoço (pós-Coliseu)</span><span class="rtag rtag-€">€€</span></div></div><div class="resto-body"><div class="resto-tip">Pertinho do Coliseu, sem cilada de turista. Comida caseira romana. O rigatoni alla coda (rabada desfiada) é o prato menos famoso mas mais gostoso.</div><a class="resto-map" href="https://www.google.com/maps/search/Hostaria+al+Gladiatore+Roma" target="_blank">📍 Ver no Maps</a></div></div>
+  <div class="resto-card"><div class="resto-top"><div class="resto-name">Tonnarello</div><div class="resto-dish">🍝 Carbonara + Amatriciana</div><div class="resto-tags"><span class="rtag rtag-day">Dia 8 · jantar em Trastevere</span><span class="rtag rtag-must">⭐ Viral</span><span class="rtag rtag-free">Sem reserva</span><span class="rtag rtag-€">€€</span></div></div><div class="resto-body"><div class="resto-tip">No Trastevere, o bairro mais bonito de Roma à noite. Fila na porta mas vale. Combina com passeio pelas ruelas depois.</div><a class="resto-map" href="https://www.google.com/maps/search/Tonnarello+Trastevere+Roma" target="_blank">📍 Ver no Maps</a></div></div>
 
   <div class="food-city-hdr paris">🇫🇷 Paris <small>09–13 Mar</small></div>
-  <div class="resto-card"><div class="resto-top"><div class="resto-name">Du Pain et des Idées</div><div class="resto-dish">🥐 Croissant + Pain des Amis</div><div class="resto-tags"><span class="rtag rtag-day">Dia 10 · manhã</span><span class="rtag rtag-must">⭐ Melhor de Paris</span><span class="rtag rtag-price">€</span></div></div><div class="resto-body"><div class="resto-tip">Consistentemente eleito o melhor croissant de Paris. Canal Saint-Martin. ⚠️ Fecha sábado e domingo — ir na segunda (Dia 10 = 2a feira ✅).</div><a class="resto-map" href="https://www.google.com/maps/search/Du+Pain+et+des+Idees+Paris" target="_blank">📍 Ver no Maps</a></div></div>
-  <div class="resto-card"><div class="resto-top"><div class="resto-name">Terroirs d'Avenir</div><div class="resto-dish">🥐 Croissant</div><div class="resto-tags"><span class="rtag rtag-day">Dia 10 · manhã</span><span class="rtag rtag-must">⭐ Viral TikTok</span><span class="rtag rtag-price">€</span></div></div><div class="resto-body"><div class="resto-tip">Top 5 croissants de Paris segundo o TikTok. 2º arrondissement, próximo ao Louvre e Marais — fácil de encaixar no roteiro.</div><a class="resto-map" href="https://www.google.com/maps/search/Terroirs+d'Avenir+Paris" target="_blank">📍 Ver no Maps</a></div></div>
-  <div class="resto-card"><div class="resto-top"><div class="resto-name">Le Relais de l'Entrecôte</div><div class="resto-dish">🥩 Steak + Frites (molho secreto)</div><div class="resto-tags"><span class="rtag rtag-day">Dia 12 · jantar</span><span class="rtag rtag-must">⭐ Clássico parisiense</span><span class="rtag rtag-free">Sem reserva</span><span class="rtag rtag-price">€€</span></div></div><div class="resto-body"><div class="resto-tip">Menu único: steak com frites e molho secreto (ninguém sabe a receita). Fila na porta mas gira rápido. Um ritual parisiense que não dá pra perder.</div><a class="resto-map" href="https://www.google.com/maps/search/Le+Relais+de+l'Entrecote+Paris" target="_blank">📍 Ver no Maps</a></div></div>
+  <div class="resto-card"><div class="resto-top"><div class="resto-name">Du Pain et des Idées</div><div class="resto-dish">🥐 Croissant + Pain des Amis</div><div class="resto-tags"><span class="rtag rtag-day">Dia 10 · manhã</span><span class="rtag rtag-must">⭐ Melhor de Paris</span><span class="rtag rtag-€">€</span></div></div><div class="resto-body"><div class="resto-tip">Consistentemente eleito o melhor croissant de Paris. Canal Saint-Martin. ⚠️ Fecha sáb e dom — ir na segunda (Dia 10 ✅).</div><a class="resto-map" href="https://www.google.com/maps/search/Du+Pain+et+des+Idees+Paris" target="_blank">📍 Ver no Maps</a></div></div>
+  <div class="resto-card"><div class="resto-top"><div class="resto-name">Terroirs d'Avenir</div><div class="resto-dish">🥐 Croissant</div><div class="resto-tags"><span class="rtag rtag-day">Dia 10 · manhã</span><span class="rtag rtag-must">⭐ Viral TikTok</span><span class="rtag rtag-€">€</span></div></div><div class="resto-body"><div class="resto-tip">Top 5 croissants de Paris. 2º arrondissement, próximo ao Louvre e Marais — fácil de encaixar no roteiro.</div><a class="resto-map" href="https://www.google.com/maps/search/Terroirs+d'Avenir+Paris" target="_blank">📍 Ver no Maps</a></div></div>
+  <div class="resto-card" style="margin-bottom:16px"><div class="resto-top"><div class="resto-name">Le Relais de l'Entrecôte</div><div class="resto-dish">🥩 Steak + Frites (molho secreto)</div><div class="resto-tags"><span class="rtag rtag-day">Dia 12 · jantar</span><span class="rtag rtag-must">⭐ Clássico parisiense</span><span class="rtag rtag-free">Sem reserva</span><span class="rtag rtag-€">€€</span></div></div><div class="resto-body"><div class="resto-tip">Menu único: steak com frites e molho secreto (ninguém sabe a receita). Fila gira rápido. Um ritual parisiense que não dá pra perder.</div><a class="resto-map" href="https://www.google.com/maps/search/Le+Relais+de+l'Entrecote+Paris" target="_blank">📍 Ver no Maps</a></div></div>
 </div>
 </div>
 
 </div><!-- /panels -->
 
-<!-- ── BOTTOM NAV ── -->
+<!-- ── NAV ── -->
 <nav id="nav">
-  <button class="nav-btn active" onclick="showPanel('timeline',this)"><span class="nav-icon">🗓️</span>Roteiro</button>
-  <button class="nav-btn" onclick="showPanel('codes',this)"><span class="nav-icon">🔑</span>Códigos</button>
-  <button class="nav-btn" onclick="showPanel('stays',this)"><span class="nav-icon">🏠</span>Estadia</button>
-  <button class="nav-btn" onclick="showPanel('checklist',this)"><span class="nav-icon">✅</span>Checklist</button>
-  <button class="nav-btn" onclick="showPanel('food',this)"><span class="nav-icon">🍽️</span>Comida</button>
+  <button class="nav-btn active" onclick="showPanel('timeline',this)"><span class="ni">🗓️</span>Roteiro</button>
+  <button class="nav-btn" onclick="showPanel('codes',this)"><span class="ni">🔑</span>Códigos</button>
+  <button class="nav-btn" onclick="showPanel('stays',this)"><span class="ni">🏠</span>Estadia</button>
+  <button class="nav-btn" onclick="showPanel('checklist',this)"><span class="ni">✅</span>Checklist</button>
+  <button class="nav-btn" onclick="showPanel('food',this)"><span class="ni">🍽️</span>Comida</button>
 </nav>
 
-<!-- toast -->
-<div class="toast" id="toast">Copiado!</div>
+<div class="toast" id="toast">Copiado ✓</div>
 
 </div><!-- /app -->
-
 <script>
-// ── NAVIGATION ──
-function showPanel(id, btn) {
-  document.querySelectorAll('.panel').forEach(p => p.classList.remove('active'));
-  document.querySelectorAll('.nav-btn').forEach(b => b.classList.remove('active'));
-  document.getElementById('panel-' + id).classList.add('active');
+function showPanel(id,btn){
+  document.querySelectorAll('.panel').forEach(p=>p.classList.remove('active'));
+  document.querySelectorAll('.nav-btn').forEach(b=>b.classList.remove('active'));
+  document.getElementById('panel-'+id).classList.add('active');
   btn.classList.add('active');
 }
-
-// ── TOGGLE DAY ──
-function toggleDay(card) {
-  card.classList.toggle('open');
-}
-
-// ── TOGGLE EVENT ──
-function toggleEv(e, ev) {
+function toggleDay(card){card.classList.toggle('open')}
+function toggleEv(e,ev){
   e.stopPropagation();
-  // only toggle if there's content in detail-wrap
-  const wrap = ev.querySelector('.ev-detail-wrap');
-  if (!wrap) return;
-  const hasContent = wrap.querySelector('.ev-info, .map-btn');
-  if (!hasContent) return;
+  const d=ev.querySelector('.ev-detail');
+  if(!d)return;
+  if(!d.querySelector('.ev-info,.map-btn'))return;
   ev.classList.toggle('open');
 }
-
-// ── COPY CODE ──
-function copyCode(el) {
-  const text = el.textContent.trim();
-  if (navigator.clipboard) {
-    navigator.clipboard.writeText(text).catch(() => {});
-  } else {
-    const ta = document.createElement('textarea');
-    ta.value = text; document.body.appendChild(ta);
-    ta.select(); document.execCommand('copy');
-    document.body.removeChild(ta);
-  }
-  const t = document.getElementById('toast');
-  t.classList.add('show');
-  setTimeout(() => t.classList.remove('show'), 1800);
+function copyCode(el){
+  const t=el.textContent.trim();
+  if(navigator.clipboard)navigator.clipboard.writeText(t).catch(()=>{});
+  else{const a=document.createElement('textarea');a.value=t;document.body.appendChild(a);a.select();document.execCommand('copy');document.body.removeChild(a)}
+  const toast=document.getElementById('toast');
+  toast.classList.add('show');
+  setTimeout(()=>toast.classList.remove('show'),1800);
 }
-
-// ── CHECKLIST ──
-function toggleCheck(el) {
-  el.classList.toggle('done');
-  saveChecks();
+function toggleCheck(el){el.classList.toggle('done');saveChecks()}
+function saveChecks(){
+  const s=Array.from(document.querySelectorAll('.cl-item')).map(i=>i.classList.contains('done'));
+  localStorage.setItem('trip26_v3',JSON.stringify(s));
 }
-function saveChecks() {
-  const state = Array.from(document.querySelectorAll('.cl-item')).map(i => i.classList.contains('done'));
-  localStorage.setItem('trip2026v2_checks', JSON.stringify(state));
-}
-function loadChecks() {
-  const saved = localStorage.getItem('trip2026v2_checks');
-  if (!saved) return;
-  JSON.parse(saved).forEach((done, i) => {
-    const items = document.querySelectorAll('.cl-item');
-    if (items[i] && done) items[i].classList.add('done');
+function loadChecks(){
+  const s=localStorage.getItem('trip26_v3');
+  if(!s)return;
+  JSON.parse(s).forEach((d,i)=>{
+    const items=document.querySelectorAll('.cl-item');
+    if(items[i]&&d)items[i].classList.add('done');
   });
 }
-
-// ── TRIP STATUS & PROGRESS ──
-function updateTripStatus() {
-  const TRIP_START = new Date('2026-03-01T00:00:00');
-  const TRIP_END   = new Date('2026-03-16T23:59:59');
-  const now = new Date();
-  const statusEl = document.getElementById('tripStatus');
-  const fillEl   = document.getElementById('progressFill');
-  const days = document.querySelectorAll('.day');
-
-  const totalMs   = TRIP_END - TRIP_START;
-  const elapsedMs = now - TRIP_START;
-
-  if (elapsedMs < 0) {
-    // Before trip
-    const daysUntil = Math.ceil(-elapsedMs / 86400000);
-    statusEl.textContent = `${daysUntil} dias para a viagem`;
-    statusEl.className = 'trip-status before';
-    fillEl.style.width = '0%';
+function initTrip(){
+  const START=new Date('2026-03-01');
+  const END=new Date('2026-03-16T23:59:59');
+  const now=new Date();
+  const pill=document.getElementById('statusPill');
+  const fill=document.getElementById('progFill');
+  const ms=END-START;
+  const el=now-START;
+  if(el<0){
+    const d=Math.ceil(-el/864e5);
+    pill.textContent=d+' dias para a viagem ✈️';
+    pill.className='status-pill before';
+    fill.style.width='0%';
     return;
   }
-
-  if (elapsedMs > totalMs) {
-    // After trip
-    statusEl.textContent = '🎉 Viagem concluída!';
-    statusEl.className = 'trip-status after';
-    fillEl.style.width = '100%';
-    days.forEach(d => d.querySelector('.day-dot')?.classList.add('past'));
+  if(el>ms){
+    pill.textContent='🎉 Viagem concluída!';
+    pill.className='status-pill after';
+    fill.style.width='100%';
+    document.querySelectorAll('.day-card').forEach(c=>c.classList.add('past-card'));
     return;
   }
-
-  // During trip
-  const dayNum = Math.floor(elapsedMs / 86400000) + 1;
-  const pct = Math.min(100, (elapsedMs / totalMs) * 100);
-  fillEl.style.width = pct.toFixed(1) + '%';
-  statusEl.textContent = `Dia ${dayNum} de 16`;
-  statusEl.className = 'trip-status during';
-
-  // Mark days as past / today
-  days.forEach(d => {
-    const dateStr = d.dataset.date;
-    if (!dateStr) return;
-    const dayDate = new Date(dateStr);
-    const dot = d.querySelector('.day-dot');
-    if (!dot) return;
-    const dayStart = new Date(dateStr + 'T00:00:00');
-    const dayEnd   = new Date(dateStr + 'T23:59:59');
-
-    if (now > dayEnd) {
-      dot.classList.add('past');
-    } else if (now >= dayStart && now <= dayEnd) {
-      dot.classList.add('today');
-      // Auto-open current day
-      const card = d.querySelector('.day-card');
-      if (card && !card.classList.contains('open')) {
-        card.classList.add('open');
-        setTimeout(() => {
-          d.scrollIntoView({ behavior: 'smooth', block: 'start' });
-        }, 300);
-      }
+  const dayN=Math.floor(el/864e5)+1;
+  fill.style.width=Math.min(100,(el/ms*100)).toFixed(1)+'%';
+  pill.textContent='Dia '+dayN+' de 16';
+  pill.className='status-pill during';
+  // mark past / today
+  for(let i=1;i<=16;i++){
+    const card=document.getElementById('day-'+i);
+    if(!card)continue;
+    if(i<dayN){card.classList.add('past-card')}
+    else if(i===dayN){
+      card.classList.add('today-card');
+      card.classList.add('open');
+      setTimeout(()=>card.scrollIntoView({behavior:'smooth',block:'start'}),400);
     }
-  });
+  }
 }
-
-// ── INIT ──
 loadChecks();
-updateTripStatus();
+initTrip();
 </script>
 </body>
 </html>
