@@ -3852,7 +3852,7 @@ input, textarea, select {
       <div class="cl-wrap">
         <div class="cl-group">
           <div class="cl-section-title">🚨 Urgente</div>
-          <div class="check-item cl-item" data-check-id="vikey"><div class="check-box cl-box"></div><span class="check-text cl-text">Check-in online Vikey — PHEB7ABY (obrigatório por lei)</span></div>
+          <div class="check-item cl-item" data-check-id="vikey"><div class="check-box cl-box cl-checked"></div><span class="check-text cl-text" style="text-decoration:line-through;opacity:0.6">Check-in online Vikey — PHEB7ABY ✅ Concluído 22/02</span></div>
           <div class="check-item cl-item cl-done" data-check-id="coliseu"><div class="check-box cl-box cl-checked">✓</div><span class="check-text cl-text" style="opacity:0.5;text-decoration:line-through">Coliseu 08/03 09:45 — OCO3522724 ✅</span></div>
           <div class="check-item cl-item" data-check-id="vaticano"><div class="check-box cl-box"></div><span class="check-text cl-text">Vaticano: decidir se vai — Piazza+Basílica grátis, Museus ~€17 (museivaticani.va)</span></div>
           <div class="check-item cl-item" data-check-id="uffizi"><div class="check-box cl-box"></div><span class="check-text cl-text">Reservar ingressos Uffizi, Florença (esgota!)</span></div>
@@ -4065,12 +4065,13 @@ const TRIP = {
     {
       n: 2, date: "2026-03-02", weekday: "Segunda", title: "Chegada em Mil\u00e3o \ud83c\uddee\ud83c\uddf9", city: "milan",
       stamp: "\ud83c\uddee\ud83c\uddf9 Mil\u00e3o \u00b7 Smart Central Loft",
-      alerts: ["\u26a0\ufe0f Check-in online Vikey obrigat\u00f3rio (por lei) antes de chegar \u2014 C\u00f3d: PHEB7ABY"],
+      alerts: ["\u2705 Check-in Vikey conclu\u00eddo (22/02/2026) \u00b7 Malas a partir das 14h \u00b7 Casa pronta \u00e0s 16h"],
       routeUrl: "https://www.google.com/maps/dir/Milan+Malpensa+Airport/Milano+Centrale+Station/Via+Copernico+49+Milan/Piazza+del+Duomo+Milan",
       events: [
         { time: "09:15", name: "\ud83d\udecf Pouso em Malpensa (MXP)", cat: "transport", detail: "Terminal 1 \u00b7 Desembarque internacional" },
         { time: "~10:15", name: "\ud83d\ude8c Terravision bus \u2192 Centrale", cat: "transport", detail: "~1h10 \u00b7 ~\u20ac5\u20138/pessoa", mapUrl: "https://www.google.com/maps/dir/Milan+Malpensa+Airport/Milano+Centrale+Station" },
-        { time: "~11:00", name: "\ud83e\uddf3 Guardar malas — Bounce / LuggageHero", cat: "transport", detail: "~\u20ac3\u20136/mala \u00b7 reservar online \u00b7 buscar s\u00f3 \u00e0s 16h quando o Airbnb estiver pronto", mapUrl: "https://www.google.com/maps/search/luggage+storage+Milano+Centrale" },
+        { time: "~11:00", name: "\ud83d\udeb6 Leve pelo centro \u2014 sem malas!", cat: "attraction", detail: "Duomo, Galleria, caf\u00e9 \u00b7 explorar leve at\u00e9 as 14h" },
+        { time: "14:00", name: "\ud83e\uddf3 Deixar malas no Airbnb", cat: "stay", detail: "Claudio permite bagagem a partir das 14h \u00b7 casa pronta \u00e0s 16h \u00b7 Via Copernico 49", mapUrl: "https://www.google.com/maps/search/Via+Copernico+49+Milan" },
         { time: "Centro", name: "\ud83d\ude87 Airbnb \u2192 Duomo: M3 Rep\u00fablica", cat: "transport", detail: "7 min a p\u00e9 at\u00e9 Rep\u00fablica \u2192 3 paradas \u2192 Duomo \u00b7 \u20ac2/pessoa" },
         { time: "12:00", name: "\ud83c\udf55 Almo\u00e7o \u2014 Di Gennaro", cat: "food", detail: "Via Santa Radegonda 14", mapUrl: "https://www.google.com/maps/search/Pizzeria+Di+Gennaro+Via+Santa+Radegonda+Milan" },
         { time: "Tarde", name: "\ud83c\udfdb\ufe0f Duomo + Galleria Vittorio Emanuele", cat: "attraction", mapUrl: "https://www.google.com/maps/search/Piazza+del+Duomo+Milan" },
